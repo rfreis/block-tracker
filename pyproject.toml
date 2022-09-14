@@ -1,0 +1,10 @@
+[tool.black]
+force-exclude = '''
+/(
+    migrations
+    |env
+    |venv
+    |.venv
+    |etc
+)/
+'''

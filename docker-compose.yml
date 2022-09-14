@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  block_tracker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        REQUIREMENTS: requirements-dev.txt
+    command: python manage.py runserver 0.0.0.0:8000
+    container_name: block-tracker
+    tty: true
+    stdin_open: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/app
+    env_file: ./.env
+    depends_on:
+      - block_tracker_db
+    networks:
+      - dev-tools_payment-network
+
+  block_tracker_db:
+    image: postgres:11.5-alpine
+    container_name: block-tracker-db
+    tty: true
+    volumes:
+      - ../.data/.pgdata-block-tracker:/var/lib/postgresql/data
+    env_file: ./.env
+    ports:
+      - 5433:5432
+    networks:
+      - dev-tools_payment-network
+
+networks:
+  dev-tools_payment-network:
+    external: true
+
