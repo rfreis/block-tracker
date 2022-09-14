@@ -25,3 +25,9 @@ DEBUG_TOOLBAR_PANELS = [
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+# Static files & Media
+
+STATICFILES_DIRS = [
+    "/app/static",
+]

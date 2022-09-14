@@ -11,6 +11,8 @@ DEBUG = os.environ.get("DEBUG", False)
 
 ALLOWED_HOSTS = ["*"]
 
+AUTH_USER_MODEL = "accounts.User"
+LOGIN_REDIRECT_URL = "dashboard:dashboard"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -19,6 +21,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "accounts",
+    "dashboard",
 ]
 
 MIDDLEWARE = [
