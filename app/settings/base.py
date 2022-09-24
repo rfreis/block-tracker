@@ -11,6 +11,8 @@ DEBUG = os.environ.get("DEBUG", False)
 
 ALLOWED_HOSTS = ["*"]
 
+AUTH_USER_MODEL = "accounts.User"
+LOGIN_REDIRECT_URL = "dashboard:dashboard"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -19,6 +21,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "accounts",
+    "dashboard",
 ]
 
 MIDDLEWARE = [
@@ -92,6 +96,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "static/"
 
+STATICFILES_DIRS = [
+    "/app/static",
+]
+
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -129,3 +138,9 @@ logging.config.dictConfig(
         },
     }
 )
+
+
+# Email backend
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = "var/emails/"
+DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_FROM")
