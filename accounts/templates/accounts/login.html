@@ -1,4 +1,4 @@
-{% extends 'registration/base.html' %}
+{% extends 'accounts/base.html' %}
 
 {% block content %}
 <div class="container">
@@ -51,10 +51,14 @@
                                             id="id_password" type="password" name="password" required
                                             placeholder="Password">
                                     </div>
-                                    <button id="login" type="submit" class="btn btn-primary btn-user btn-block">
+                                    <button type="submit" class="btn btn-primary btn-user btn-block">
                                         Login
                                     </button>
                                 </form>
+                                <hr>
+                                <div class="text-center">
+                                    <a class="small" href="{% url 'accounts:password_reset' %}">Forgot Password?</a>
+                                </div>
                             </div>
                         </div>
                     </div>

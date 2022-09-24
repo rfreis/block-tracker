@@ -96,6 +96,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "static/"
 
+STATICFILES_DIRS = [
+    "/app/static",
+]
+
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -133,3 +138,9 @@ logging.config.dictConfig(
         },
     }
 )
+
+
+# Email backend
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = "var/emails/"
+DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_FROM")

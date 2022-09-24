@@ -6,6 +6,11 @@ local-bash:
 logs:
 	docker-compose logs --follow block_tracker
 
+e2e:
+	docker-compose exec block_tracker coverage run -m pytest tests/e2e -v -x
+	docker-compose exec block_tracker coverage xml --ignore-errors
+	@echo "Total Python coverage:" `docker-compose exec block_tracker coverage report --precision=2 | tail -n 1 | awk '{ print $4 }'`
+
 unit:
 	docker-compose exec block_tracker coverage run -m pytest tests/unit -v -x
 	docker-compose exec block_tracker coverage xml --ignore-errors

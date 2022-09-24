@@ -17,6 +17,7 @@ services:
       - 8000:8000
     volumes:
       - .:/app
+      # - ./var/site-packages:/usr/local/lib/python3.10/site-packages
     env_file: ./.env
     depends_on:
       - block_tracker_db
