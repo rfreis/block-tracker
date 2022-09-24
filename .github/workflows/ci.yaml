@@ -45,5 +45,6 @@ jobs:
         POSTGRES_PASSWORD: db_password
         DB_HOST: localhost
         DB_PORT: 5432
+        SECRET_KEY: secret
       run: |
         pytest tests/ -v -x
