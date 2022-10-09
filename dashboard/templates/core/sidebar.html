@@ -13,10 +13,34 @@
     <hr class="sidebar-divider my-0">
 
     <!-- Nav Item - Dashboard -->
-    <li class="nav-item active">
+    <li class="nav-item {% if app == 'dashboard' %}active{% endif %}">
         <a class="nav-link" href="{% url 'dashboard:dashboard' %}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span></a>
+            <span>Dashboard</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Wallets -->
+    <li class="nav-item {% if app == 'wallet' %}active{% endif %}">
+        <a class="nav-link pt-0 {% if app != 'wallet' %}collapsed{% endif %}" href="#" data-toggle="collapse" data-target="#collapseWallet"
+            aria-expanded="true" aria-controls="collapseWallet">
+            <i class="fas fa-fw fa-wallet"></i>
+            <span>Wallets</span>
+        </a>
+        <div id="collapseWallet" class="collapse {% if app == 'wallet' %}show{% endif %}" aria-labelledby="headingWallet" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item {% if app == 'wallet' and page == 'create' %}active{% endif %}" href="{% url 'wallet:create' %}">Add Wallet</a>
+                <a class="collapse-item {% if app == 'wallet' and page == 'list' %}active{% endif %}" href="{% url 'wallet:list' %}">List Wallets</a>
+            </div>
+        </div>
+    </li>
+    
+    <!-- Nav Item - Transactions -->
+    <li class="nav-item {% if app == 'transaction' %}active{% endif %}">
+        <a class="nav-link pt-0" href="{% url 'transaction:list' %}">
+            <i class="fas fa-fw fa-dollar-sign"></i>
+            <span>Transactions</span>
+        </a>
     </li>
 
     <!-- Divider -->

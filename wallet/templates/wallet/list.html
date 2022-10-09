@@ -1,0 +1,48 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Wallets</h1>
+    <a id="create_wallet_link" href="{% url 'wallet:create' %}" class="d-none d-sm-inline-block btn btn-sm btn-success">
+        <i class="fas fa-plus fa-sm text-white-50"></i> Add Wallet
+    </a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Wallets</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="wallet_list" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Protocol</th>
+                        <th>Label</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if object_list.count %}
+                    {% for obj in object_list %}
+                    <tr>
+                        <td>{{ obj.content_type.get_protocol_type_display }}</td>
+                        <td>{% if obj.label %}{{ obj.label }}{% else %}-{% endif %}</td>
+                        <td>{{ obj.get_wallet_type_display }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td class="text-center" colspan="3">
+                            No Wallets were found.
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

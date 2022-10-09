@@ -1,0 +1,51 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<!-- Page Heading -->
+<h1 class="h3 mb-4 text-gray-800">Add Wallet</h1>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Fill the formulary to Add a new Wallet</h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12 col-lg-8 col-xl-6">
+                <p>To add a new Wallet, fill the form below with the Public Key or Address.</p>
+                {% if form.errors %}
+                <div class="alert alert-danger" role="alert">
+                    Error(s):
+                    {{ form.errors }}
+                </div>
+                {% endif %}
+                <form method="post" id="create-wallet-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        {{ form.hash.label }}
+                        <input type="text" class="form-control"
+                            id="id_hash" name="hash" required
+                            {% if form.hash.value %}value="{{ form.hash.value }}"{% endif %}
+                            placeholder="Enter the Public Key or Address">
+                    </div>
+                    <div class="form-group">
+                        {{ form.label.label }}
+                        <input type="text" class="form-control"
+                            id="id_label" name="label"
+                            {% if form.label.value %}value="{{ form.label.value }}"{% endif %}
+                            placeholder="Enter the Wallet Label">
+                    </div>
+                    <div class="form-group">
+                        {{ form.protocol_type.label }}
+                        {{ form.protocol_type }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        Add Wallet
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

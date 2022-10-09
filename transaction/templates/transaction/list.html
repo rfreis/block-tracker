@@ -1,0 +1,49 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Transactions</h1>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Transactions</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="transaction_list" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Tx. ID</th>
+                        <th>Address</th>
+                        <th>Protocol</th>
+                        <th>Amount</th>
+                        <th>Is Confirmed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if object_list.count %}
+                    {% for obj in object_list %}
+                    <tr>
+                        <td>{{ obj.tx_id }}</td>
+                        <td>{{ obj.address.hash }}</td>
+                        <td>{{ obj.address.get_protocol_type_display }}</td>
+                        <td>{{ obj.amount_coin }} {{ obj.get_coin_type_display }}</td>
+                        <td>{% if obj.is_confirmed %}Yes{% else %}No{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td class="text-center" colspan="5">
+                            No Transactions were found.
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
