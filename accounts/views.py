@@ -1,10 +1,10 @@
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
 
-from app.contrib.mixins import TitleContextMixin
+from app.contrib.mixins import BaseContextMixin
 
 
-class LoginView(TitleContextMixin, auth_views.LoginView):
+class LoginView(BaseContextMixin, auth_views.LoginView):
     template_name = "accounts/login.html"
     title = "Login"
 

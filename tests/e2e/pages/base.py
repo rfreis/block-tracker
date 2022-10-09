@@ -11,3 +11,6 @@ class BasePage:
 
     def get_by_selector(self, element, selector):
         return element.find_element(By.CSS_SELECTOR, selector)
+
+    def get_row_columns(self, row):
+        return row.find_elements(By.CSS_SELECTOR, "td")
