@@ -29,7 +29,7 @@
                         <td>{{ obj.tx_id }}</td>
                         <td>{{ obj.address.hash }}</td>
                         <td>{{ obj.address.get_protocol_type_display }}</td>
-                        <td>{{ obj.amount_coin }} {{ obj.get_coin_type_display }}</td>
+                        <td>{{ obj.amount_asset }} {{ obj.asset }}</td>
                         <td>{% if obj.is_confirmed %}Yes{% else %}No{% endif %}</td>
                     </tr>
                     {% endfor %}

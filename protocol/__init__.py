@@ -2,8 +2,6 @@ from protocol.constants import ProtocolType
 
 
 class FakeClass:
-    symbol = "BTC"
-
     def validate_address(self, address):
         return not address.startswith("fa")
 

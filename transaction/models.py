@@ -2,7 +2,6 @@ from django.db import models
 
 from app.contrib.models import TimeStampedModel
 from protocol import Protocol
-from protocol.constants import CoinType
 from wallet.models import Address
 
 
@@ -11,8 +10,8 @@ class Transaction(TimeStampedModel):
         Address, related_name="transaction", db_index=True, on_delete=models.PROTECT
     )
     amount_usd = models.CharField(max_length=255)
-    amount_coin = models.CharField(max_length=255)
-    coin_type = models.IntegerField(choices=CoinType.choices)
+    amount_asset = models.CharField(max_length=255)
+    asset = models.CharField(max_length=255)
     tx_id = models.CharField(max_length=255, db_index=True)
     block_id = models.CharField(max_length=255, null=True, blank=True)
     vin = models.CharField(max_length=255, null=True, blank=True)

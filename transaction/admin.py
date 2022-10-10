@@ -13,7 +13,8 @@ class TransactionAdmin(admin.ModelAdmin):
         "id",
         "tx_id",
         "amount_usd",
-        "amount_coin",
+        "amount_asset",
+        "asset",
         "block_id",
         "is_confirmed",
     ]
