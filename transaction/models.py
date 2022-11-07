@@ -38,11 +38,11 @@ class Transaction(TimeStampedModel):
         return self.tx_id
 
     @property
-    def inputs(self):
+    def inputs_count(self):
         return self.inputdata.count()
 
     @property
-    def outputs(self):
+    def outputs_count(self):
         return self.outputdata.count()
 
 

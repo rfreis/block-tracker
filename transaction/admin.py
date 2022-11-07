@@ -27,8 +27,8 @@ class TransactionAdmin(admin.ModelAdmin):
         "id",
         "tx_id",
         "block_id",
-        "inputs",
-        "outputs",
+        "inputs_count",
+        "outputs_count",
         "is_confirmed",
         "block_time",
     ]
