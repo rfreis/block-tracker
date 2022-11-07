@@ -1,5 +1,6 @@
 -r ./requirements.txt
 
+aioresponses==0.7.3
 black==22.8.0
 coverage==6.4.4
 django-debug-toolbar==3.6.0

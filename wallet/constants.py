@@ -2,5 +2,5 @@ from django.db.models import IntegerChoices
 
 
 class WalletType(IntegerChoices):
-    PUBLIC_KEY = 1, "Public Key"
+    EXTENDED_PUBLIC_KEY = 1, "Extended Public Key"
     ADDRESS = 2, "Address"

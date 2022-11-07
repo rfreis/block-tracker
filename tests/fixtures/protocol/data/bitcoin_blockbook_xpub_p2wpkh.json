@@ -1,0 +1,12 @@
+{
+    "page": 1,
+    "totalPages": 1,
+    "itemsOnPage": 1000,
+    "address": "wpkh(xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8)",
+    "balance": "0",
+    "totalReceived": "0",
+    "totalSent": "0",
+    "unconfirmedBalance": "0",
+    "unconfirmedTxs": 0,
+    "txs": 0
+}

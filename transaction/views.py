@@ -1,26 +1,32 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
+from django.db.models import Q, Prefetch, OuterRef, Subquery
 from django.views.generic.list import ListView
 
 from app.contrib.mixins import BaseContextMixin
-from transaction.models import Transaction
+from transaction.models import Transaction, InputData, OutputData
+from wallet.models import UserWallet
 
 
 class TransactionListView(LoginRequiredMixin, BaseContextMixin, ListView):
     app = "transaction"
     page = "list"
-    queryset = (
-        Transaction.objects.select_related("address")
-        .prefetch_related("address__user_wallet", "address__public_key__user_wallet")
-        .order_by("-id")
-    )
+    queryset = Transaction.objects.order_by("-id")
     template_name = "transaction/list.html"
     title = "Transactions"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["user_wallets"] = UserWallet.objects.filter(
+            user=self.request.user
+        ).values_list("id", flat=True)
+        return context
 
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset = queryset.filter(
-            Q(address__user_wallet__user=self.request.user)
-            | Q(address__public_key__user_wallet__user=self.request.user)
+            Q(inputs__user_wallet__user=self.request.user)
+            | Q(inputs__extended_public_key__user_wallet__user=self.request.user)
+            | Q(outputs__user_wallet__user=self.request.user)
+            | Q(outputs__extended_public_key__user_wallet__user=self.request.user)
         )
-        return queryset
+        return queryset.distinct()

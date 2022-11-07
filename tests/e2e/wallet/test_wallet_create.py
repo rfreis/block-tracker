@@ -5,9 +5,10 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from protocol.constants import ProtocolType
 from wallet.constants import WalletType
-from wallet.models import UserWallet
+from wallet.models import Address, UserWallet
 
 from tests.e2e.pages.wallet_create import WalletCreatePage
+from wallet.signals import derive_addresses
 
 
 def test_wallet_create_logged_out(browser, live_server):
@@ -17,7 +18,9 @@ def test_wallet_create_logged_out(browser, live_server):
     assert "/accounts/login/?next=/wallet/add/" in browser.current_url
 
 
-def test_wallet_create_add_address(browser_user_one, live_server, user_one):
+def test_wallet_create_add_address(
+    browser_user_one, live_server, user_one, hash_address_p2wpkh_bitcoin_one
+):
     browser_user_one.get("/wallet/add/", live_server)
     page = WalletCreatePage(browser_user_one)
 
@@ -26,7 +29,7 @@ def test_wallet_create_add_address(browser_user_one, live_server, user_one):
     user_wallets = UserWallet.objects.all()
     assert user_wallets.count() == 0
 
-    page.input_hash.send_keys("f_invalid_for_public_key_valid_for_address")
+    page.input_hash.send_keys(hash_address_p2wpkh_bitcoin_one)
     page.input_label.send_keys("Wallet for Single Address")
     page.input_protocol_type.send_keys("1")
     page.submit_button.click()
@@ -37,14 +40,17 @@ def test_wallet_create_add_address(browser_user_one, live_server, user_one):
     assert user_wallets.count() == 1
     user_wallet = user_wallets.first()
     assert user_wallet.user == user_one
-    assert user_wallet.public_key == None
-    assert user_wallet.address.hash == "f_invalid_for_public_key_valid_for_address"
+    assert user_wallet.extended_public_key == None
+    assert user_wallet.address.hash == hash_address_p2wpkh_bitcoin_one
     assert user_wallet.address.protocol_type == ProtocolType.BITCOIN
     assert user_wallet.label == "Wallet for Single Address"
     assert user_wallet.wallet_type == WalletType.ADDRESS
 
 
-def test_wallet_create_add_public_key(browser_user_one, live_server, user_one):
+@pytest.mark.enable_signals
+def test_wallet_create_add_xpublic_key(
+    browser_user_one, live_server, user_one, hash_xpub_bitcoin_one
+):
     browser_user_one.get("/wallet/add/", live_server)
     page = WalletCreatePage(browser_user_one)
 
@@ -53,7 +59,7 @@ def test_wallet_create_add_public_key(browser_user_one, live_server, user_one):
     user_wallets = UserWallet.objects.all()
     assert user_wallets.count() == 0
 
-    page.input_hash.send_keys("valid_for_public_key_hash")
+    page.input_hash.send_keys(hash_xpub_bitcoin_one)
     page.input_label.send_keys("Wallet for Extended Public Key")
     page.input_protocol_type.send_keys("1")
     page.submit_button.click()
@@ -64,11 +70,16 @@ def test_wallet_create_add_public_key(browser_user_one, live_server, user_one):
     assert user_wallets.count() == 1
     user_wallet = user_wallets.first()
     assert user_wallet.user == user_one
-    assert user_wallet.public_key.hash == "valid_for_public_key_hash"
-    assert user_wallet.public_key.protocol_type == ProtocolType.BITCOIN
+    assert user_wallet.extended_public_key.hash == hash_xpub_bitcoin_one
+    assert user_wallet.extended_public_key.protocol_type == ProtocolType.BITCOIN
     assert user_wallet.address == None
     assert user_wallet.label == "Wallet for Extended Public Key"
-    assert user_wallet.wallet_type == WalletType.PUBLIC_KEY
+    assert user_wallet.wallet_type == WalletType.EXTENDED_PUBLIC_KEY
+
+    derived_addresses = Address.objects.filter(
+        extended_public_key=user_wallet.extended_public_key
+    )
+    assert derived_addresses.count() == 84
 
 
 def test_wallet_create_invalid_hash(browser_user_one, live_server):
@@ -80,7 +91,7 @@ def test_wallet_create_invalid_hash(browser_user_one, live_server):
     user_wallets = UserWallet.objects.all()
     assert user_wallets.count() == 0
 
-    page.input_hash.send_keys("fa_invalid_for_both_hash")
+    page.input_hash.send_keys("invalid_hash")
     page.input_label.send_keys("Invalid Wallet")
     page.input_protocol_type.send_keys("1")
     page.submit_button.click()

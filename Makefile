@@ -11,13 +11,16 @@ e2e:
 	docker-compose exec block_tracker coverage xml --ignore-errors
 	@echo "Total Python coverage:" `docker-compose exec block_tracker coverage report --precision=2 | tail -n 1 | awk '{ print $4 }'`
 
+integration:
+	docker-compose exec block_tracker pytest tests/integration -v -x
+
 unit:
 	docker-compose exec block_tracker coverage run -m pytest tests/unit -v -x
 	docker-compose exec block_tracker coverage xml --ignore-errors
 	@echo "Total Python coverage:" `docker-compose exec block_tracker coverage report --precision=2 | tail -n 1 | awk '{ print $4 }'`
 
 test:
-	docker-compose exec block_tracker coverage run -m pytest tests/ -v -x
+	docker-compose exec block_tracker coverage run -m pytest tests/ -v -x --ignore=tests/integration
 	docker-compose exec block_tracker coverage xml --ignore-errors
 	@echo "Total Python coverage:" `docker-compose exec block_tracker coverage report --precision=2 | tail -n 1 | awk '{ print $4 }'`
 

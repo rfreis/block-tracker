@@ -11,7 +11,7 @@ from wallet.models import UserWallet
 class WalletListView(LoginRequiredMixin, BaseContextMixin, ListView):
     app = "wallet"
     page = "list"
-    queryset = UserWallet.objects.select_related("public_key", "address")
+    queryset = UserWallet.objects.select_related("extended_public_key", "address")
     template_name = "wallet/list.html"
     title = "Wallets"
 
