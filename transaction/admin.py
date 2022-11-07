@@ -26,6 +26,7 @@ class TransactionAdmin(admin.ModelAdmin):
     list_display = [
         "id",
         "tx_id",
+        "protocol_type",
         "block_id",
         "inputs_count",
         "outputs_count",
@@ -33,6 +34,7 @@ class TransactionAdmin(admin.ModelAdmin):
         "block_time",
     ]
     list_filter = [
+        "protocol_type",
         "block_time",
         "is_confirmed",
     ]
