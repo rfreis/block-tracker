@@ -3,6 +3,7 @@ class ProtocolBase:
 
     def __init__(self, protocol_type=None, *args, **kwargs):
         self.protocol_type = protocol_type
+        super().__init__(*args, **kwargs)
 
     @classmethod
     def validate_address(cls, address):

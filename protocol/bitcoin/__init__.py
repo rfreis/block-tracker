@@ -9,18 +9,26 @@ from protocol.utils.xpublic_key import validate_xpub
 from protocol.bitcoin.ckd import BitcoinCKDMixin
 from protocol.bitcoin.validate import BitcoinValidateMixin
 from protocol.bitcoin.backend_blockbook import BitcoinBlockBookMixin
+from protocol.bitcoin.websocket_blockbook import BitcoinSocketIOMixin
 
 
 __all__ = ["Bitcoin", "BitcoinTestnet"]
 
 
-class BitcoinBase(BitcoinBlockBookMixin, BitcoinValidateMixin, BitcoinCKDMixin):
+class BitcoinBase(
+    BitcoinBlockBookMixin,
+    BitcoinValidateMixin,
+    BitcoinCKDMixin,
+    ProtocolBase,
+    BitcoinSocketIOMixin,
+):
     required_confirmations = 6
     addresses = {}
     extended_pubkeys = {}
+    hashblock_event_name = "bitcoind/hashblock"
 
 
-class Bitcoin(BitcoinBase, ProtocolBase):
+class Bitcoin(BitcoinBase):
     asset_name = "BTC"
     addresses = {
         "P2PKH": {
@@ -51,7 +59,7 @@ class Bitcoin(BitcoinBase, ProtocolBase):
     }
 
 
-class BitcoinTestnet(BitcoinBase, ProtocolBase):
+class BitcoinTestnet(BitcoinBase):
     asset_name = "BTCTEST"
     addresses = {
         "P2PKH": {

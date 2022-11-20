@@ -3,9 +3,15 @@ from aiohttp import (
     ClientSession,
     ClientError,
 )
+import logging
+import socketio
 from urllib.parse import urlencode
 
+from protocol.tasks import new_block_hash
 from protocol.utils.exceptions import ClientException
+
+
+logger = logging.getLogger(__name__)
 
 
 class BlockBookClient:
@@ -67,3 +73,38 @@ class BlockBookClient:
         )
         paths = ["xpub", format_xpub_hash]
         return asyncio.run(self.client_request(paths, data))
+
+
+class BlockBookSocketIOClient:
+    url = None
+    protocol_type = None
+    hashblock_event_name = None
+
+    def __init__(self, url, protocol_type, hashblock_event_name):
+        self.url = url
+        self.protocol_type = protocol_type
+        self.hashblock_event_name = hashblock_event_name
+        self.sio = socketio.AsyncClient(
+            ssl_verify=False, logger=True, engineio_logger=True
+        )
+        self.sio.on("connect", self._connect)
+        self.sio.on("disconnect", self._disconnect)
+        self.sio.on(self.hashblock_event_name, self.hashblock)
+
+    async def _connect(self):
+        logger.info("Connection established %s" % self.url)
+        await self.sio.emit("subscribe", "bitcoind/hashblock")
+
+    async def _disconnect(self):
+        logger.info("Disconnected from server %s" % self.url)
+
+    async def hashblock(self, block_hash):
+        logger.info("New block hash: %s (%s)" % (block_hash, self.protocol_type))
+        new_block_hash.delay(self.protocol_type, block_hash)
+
+    async def connect(self):
+        await self.sio.connect(self.url, transports=["websocket"])
+        await self.sio.wait()
+
+    def start(self):
+        asyncio.run(self.connect())

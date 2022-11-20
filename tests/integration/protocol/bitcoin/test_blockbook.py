@@ -1,17 +1,17 @@
 import pytest
 
-from protocol.bitcoin import Bitcoin
+from protocol import Protocol, ProtocolType
 
 
 def test_current_block():
-    bitcoin = Bitcoin()
+    bitcoin = Protocol(ProtocolType.BITCOIN)
 
     current_block = bitcoin.get_current_block()
     assert isinstance(current_block, int)
 
 
 def test_xpub_details(hash_xpub_bitcoin_two):
-    bitcoin = Bitcoin()
+    bitcoin = Protocol(ProtocolType.BITCOIN)
 
     xpub_content = bitcoin.backend.get_xpub(
         hash_xpub_bitcoin_two, details="txs", tokens="used"
@@ -53,3 +53,17 @@ def test_xpub_details(hash_xpub_bitcoin_two):
     assert isinstance(vout["addresses"], list)
     assert isinstance(vout["value"], str)
     assert isinstance(vout["hex"], str)
+
+
+@pytest.mark.skip
+def test_websocket(mocker):
+    async def hashblock(self, block_hash):
+        print(f"New block hash: {block_hash}")
+        await self.sio.disconnect()
+
+    mocker.patch(
+        "protocol.bitcoin.websocket_blockbook.BlockBookSocketIOClient.hashblock",
+        hashblock,
+    )
+    bitcoin = Protocol(ProtocolType.BITCOIN)
+    bitcoin.wss_backend.start()

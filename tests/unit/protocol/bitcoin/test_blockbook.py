@@ -81,3 +81,16 @@ def test_get_transactions_from_xpublic_key(
         ],
     }
     assert content["last_used_indexes"] == {"P2PKH": {"receive": 24, "change": 0}}
+
+
+@pytest.mark.asyncio
+async def test_wss_backend(mocker, block_height_and_hash_tx_xpub_bitcoin_two):
+    mock_new_block = mocker.patch(
+        "protocol.utils.blockbook.new_block_hash.delay",
+    )
+    _, block_hash = block_height_and_hash_tx_xpub_bitcoin_two
+
+    bitcoin = Bitcoin(ProtocolType.BITCOIN)
+    await bitcoin.wss_backend.hashblock(block_hash)
+
+    mock_new_block.assert_called_once_with(ProtocolType.BITCOIN, block_hash)

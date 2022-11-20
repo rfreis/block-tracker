@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "accounts",
     "dashboard",
+    "protocol",
     "transaction",
     "wallet",
 ]
