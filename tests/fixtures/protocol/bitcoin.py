@@ -138,3 +138,11 @@ def blockbook_xpub_details_p2wpkh():
         "tests/fixtures/protocol/data/bitcoin_blockbook_xpub_p2wpkh.json"
     )
     return content
+
+
+@pytest.fixture
+def blockbook_address_details():
+    content = json_from_file(
+        "tests/fixtures/protocol/data/bitcoin_blockbook_address.json"
+    )
+    return content

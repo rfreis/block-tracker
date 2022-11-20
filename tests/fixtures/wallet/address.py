@@ -1,5 +1,7 @@
 import pytest
 
+from tests.fixtures.utils import delete_related_obj
+
 from protocol.constants import ProtocolType
 from wallet.models import Address
 
@@ -14,6 +16,20 @@ def single_bitcoin_address_one(hash_address_p2pkh_bitcoin_three):
 
     yield address
 
+    address.delete()
+
+
+@pytest.fixture
+@pytest.mark.usefixtures("db")
+def single_bitcoin_address_two(hash_address_p2pkh_bitcoin_two):
+    address = Address.objects.create(
+        hash=hash_address_p2pkh_bitcoin_two,
+        protocol_type=ProtocolType.BITCOIN,
+    )
+
+    yield address
+
+    delete_related_obj(address)
     address.delete()
 
 

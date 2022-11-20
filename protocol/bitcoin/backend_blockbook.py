@@ -98,6 +98,16 @@ class BitcoinBlockBookMixin:
 
         return last_address_index
 
+    def get_transactions_from_address(self, address):
+        is_valid, _ = self.validate_address(address)
+        if not is_valid:
+            return None
+
+        content = self.backend.get_address(address, details="txs")
+        txs = content["transactions"]
+        formatted_txs = self._format_txs(txs)
+        return formatted_txs
+
     def get_transactions_from_xpublic_key(self, xpublic_key):
         is_valid, xpub_semantic = self.validate_xpublic_key(xpublic_key)
         if not is_valid:
