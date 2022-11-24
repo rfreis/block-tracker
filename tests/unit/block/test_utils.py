@@ -12,6 +12,7 @@ from block.utils import (
 from protocol.bitcoin.backend_blockbook import BLOCKBOOK_SETTINGS
 from protocol.constants import ProtocolType
 from transaction.models import Transaction
+from wallet.models import Address
 
 
 @pytest.mark.usefixtures("db")
@@ -230,6 +231,40 @@ def test_digest_new_block_confirmed_block(aioresponses, blockbook_block):
 
 @pytest.mark.usefixtures(
     "db",
+)
+def test_digest_new_block_derive_new_addresses(
+    aioresponses, blockbook_block, derived_bitcoin_address_three
+):
+    derived_bitcoin_address_three.hash = "14cZMQk89mRYQkDEj8Rn25AnGoBi5H6uer"
+    derived_bitcoin_address_three.index = 0
+    derived_bitcoin_address_three.save()
+
+    assert (
+        Address.objects.filter(
+            extended_public_key=derived_bitcoin_address_three.extended_public_key
+        ).count()
+        == 1
+    )
+
+    with aioresponses() as mock:
+        mock.get(
+            f"{BLOCKBOOK_SETTINGS['Bitcoin']['url']}/api/v2/block/246469?page=1",
+            payload=blockbook_block,
+        )
+        digest_new_block(ProtocolType.BITCOIN, 246469, 246469)
+
+    blocks = Block.objects.all()
+    assert blocks.count() == 1
+    assert (
+        Address.objects.filter(
+            extended_public_key=derived_bitcoin_address_three.extended_public_key
+        ).count()
+        == 21
+    )
+
+
+@pytest.mark.usefixtures(
+    "db",
     "single_bitcoin_address_three",
     "single_bitcoin_address_four",
     "single_bitcoin_address_five",
@@ -279,14 +314,14 @@ def test_sync_chain_of_blocks_with_block_id(mocker):
     assert mock_digest_new_block.call_count == 3
     assert (
         repr(mock_digest_new_block.call_args_list[0])
-        == "call(ProtocolType.BITCOIN, 761590, 761594)"
+        == "call(ProtocolType.BITCOIN, 761591, 761594)"
     )
     assert (
         repr(mock_digest_new_block.call_args_list[1])
-        == "call(ProtocolType.BITCOIN, 761590, 761595)"
+        == "call(ProtocolType.BITCOIN, 761591, 761595)"
     )
     assert (
         repr(mock_digest_new_block.call_args_list[2])
-        == "call(ProtocolType.BITCOIN, 761590, 761596)"
+        == "call(ProtocolType.BITCOIN, 761591, 761596)"
     )
-    mock_confirm_blocks.assert_called_once_with(ProtocolType.BITCOIN, 761590)
+    mock_confirm_blocks.assert_called_once_with(ProtocolType.BITCOIN, 761591)

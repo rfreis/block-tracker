@@ -122,8 +122,10 @@ def derived_bitcoin_address_three(
         protocol_type=xpublic_key_bitcoin_two.protocol_type,
         is_change=False,
         index=24,
+        details={"semantic": "P2PKH"},
     )
 
     yield address
 
+    delete_related_obj(address)
     address.delete()

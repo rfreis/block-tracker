@@ -15,7 +15,7 @@ class Block(TimeStampedModel):
         ordering = ["id"]
         constraints = [
             models.UniqueConstraint(
-                fields=["protocol_type", "block_id", "is_confirmed"],
+                fields=["protocol_type", "block_id", "block_hash"],
                 name="block_unique",
             ),
         ]

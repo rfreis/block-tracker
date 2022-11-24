@@ -16,6 +16,7 @@ def confirm_blocks(protocol_type, last_confirmed_block_id):
         protocol_type=protocol_type,
         block_id__lte=last_confirmed_block_id,
         is_confirmed=False,
+        is_orphan=False,
     )
     if transactions:
         transaction_ids = ", ".join(
@@ -31,6 +32,7 @@ def confirm_blocks(protocol_type, last_confirmed_block_id):
         protocol_type=protocol_type,
         block_id__lte=last_confirmed_block_id,
         is_confirmed=False,
+        is_orphan=False,
     )
     if blocks:
         block_ids = ", ".join(str(x) for x in list(blocks.values_list("id", flat=True)))
@@ -147,7 +149,7 @@ def sync_chain_of_blocks(protocol_type, block_id=None):
         last_block_id = last_block.block_id + 1
     else:
         last_block_id = current_block
-    last_confirmed_block = current_block - protocol.required_confirmations
+    last_confirmed_block = current_block + 1 - protocol.required_confirmations
 
     for block_height in range(last_block_id, current_block + 1):
         digest_new_block(protocol_type, last_confirmed_block, block_height)
