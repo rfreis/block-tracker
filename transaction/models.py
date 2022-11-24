@@ -23,6 +23,7 @@ class Transaction(TimeStampedModel):
     block_id = models.IntegerField(null=True, blank=True)
     block_time = models.DateTimeField(null=True, blank=True)
     is_confirmed = models.BooleanField(default=False)
+    is_orphan = models.BooleanField(default=False)
     details = models.JSONField(default=dict)
 
     class Meta:

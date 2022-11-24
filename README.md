@@ -46,3 +46,19 @@ make logs
 ```bash
 make test
 ```
+
+## Workers
+
+### Blockbook websocket
+
+```bash
+python manage.py wss_blockbook <ProtocolType attribute>
+python manage.py wss_blockbook BITCOIN
+python manage.py wss_blockbook BITCOIN_TESTNET
+```
+
+### Celery background worker
+
+```bash
+python -m celery -A app worker
+```

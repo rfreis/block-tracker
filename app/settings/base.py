@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.humanize",
     "accounts",
+    "block",
     "dashboard",
     "protocol",
     "transaction",

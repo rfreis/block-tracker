@@ -1,16 +1,16 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q, Prefetch, OuterRef, Subquery
+from django.db.models import Q
 from django.views.generic.list import ListView
 
 from app.contrib.mixins import BaseContextMixin
-from transaction.models import Transaction, InputData, OutputData
+from transaction.models import Transaction
 from wallet.models import UserWallet
 
 
 class TransactionListView(LoginRequiredMixin, BaseContextMixin, ListView):
     app = "transaction"
     page = "list"
-    queryset = Transaction.objects.order_by("-id")
+    queryset = Transaction.objects.filter(is_orphan=False).order_by("-id")
     template_name = "transaction/list.html"
     title = "Transactions"
 

@@ -7,7 +7,7 @@ import logging
 import socketio
 from urllib.parse import urlencode
 
-from protocol.tasks import new_block_hash
+from app.celery import app as celery_app
 from protocol.utils.exceptions import ClientException
 
 
@@ -60,6 +60,10 @@ class BlockBookClient:
         paths = ["block", block_height_or_hash]
         return asyncio.run(self.client_request(paths, data))
 
+    def get_block_index(self, block_height, **data):
+        paths = ["block-index", block_height]
+        return asyncio.run(self.client_request(paths, data))
+
     def get_current_block(self):
         return asyncio.run(self.client_request(""))
 
@@ -100,7 +104,9 @@ class BlockBookSocketIOClient:
 
     async def hashblock(self, block_hash):
         logger.info("New block hash: %s (%s)" % (block_hash, self.protocol_type))
-        new_block_hash.delay(self.protocol_type, block_hash)
+        celery_app.send_task(
+            "block.tasks.new_block_hash", (self.protocol_type, block_hash)
+        )
 
     async def connect(self):
         await self.sio.connect(self.url, transports=["websocket"])

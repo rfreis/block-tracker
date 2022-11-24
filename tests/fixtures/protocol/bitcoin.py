@@ -113,6 +113,20 @@ def invalid_bitcoin_addresses():
 
 
 @pytest.fixture
+def block_hashes_by_id():
+    content = {
+        761592: "00000000000000000003a742d44aec4caf50c3889646e9e7936057b892485ec7",
+        761593: "00000000000000000000da509ab96e9e2c359106741b20ad453f2bd121e82a5f",
+        761594: "000000000000000000071351e3d1bb699eef8f24fa0f72391e768df0ce19afea",
+        761595: "000000000000000000002fb176e0e6bbb362983b8f2f2c9586d3e058f38f228c",
+        761596: "00000000000000000005f25f4e9dad4b820165f95868756d869b65e843445038",
+        761597: "00000000000000000006251bb6317d256d8216200f9e321ba9c0af42187d5e3f",
+        761598: "00000000000000000003692d7b37877d363f95ce56790d04c3c4104ad503d6f1",
+    }
+    return content
+
+
+@pytest.fixture
 def ckd_bitcoin_hashes():
     content = json_from_file("tests/fixtures/protocol/data/bitcoin_ckd.json")
     return content
@@ -122,6 +136,30 @@ def ckd_bitcoin_hashes():
 def blockbook_summary():
     content = json_from_file(
         "tests/fixtures/protocol/data/bitcoin_blockbook_summary.json"
+    )
+    return content
+
+
+@pytest.fixture
+def blockbook_block():
+    content = json_from_file(
+        "tests/fixtures/protocol/data/bitcoin_blockbook_block.json"
+    )
+    return content
+
+
+@pytest.fixture
+def blockbook_block_p1():
+    content = json_from_file(
+        "tests/fixtures/protocol/data/bitcoin_blockbook_block_p1.json"
+    )
+    return content
+
+
+@pytest.fixture
+def blockbook_block_p2():
+    content = json_from_file(
+        "tests/fixtures/protocol/data/bitcoin_blockbook_block_p2.json"
     )
     return content
 

@@ -3,7 +3,7 @@ import os
 from celery import Celery
 
 
-__all__ = ["backend_celery"]
+__all__ = ["app"]
 
 
 SETTINGS_MODULE_PATH = os.environ.get("SETTINGS_MODULE_PATH", "app.settings.local")

@@ -33,7 +33,7 @@ class BitcoinBlockBookMixin:
     def _format_value(self, value):
         return Decimal(str(int(value) / self.divisible_by))
 
-    def _format_txs(self, txs):
+    def _format_txs(self, txs, block_digest=False):
         formatted_txs = []
         for tx in txs:
             is_confirmed = tx["confirmations"] >= self.required_confirmations
@@ -52,8 +52,11 @@ class BitcoinBlockBookMixin:
                 },
             }
             vins = []
+            addresses = []
             for vin in tx["vin"]:
-                if vin.get("isOwn"):
+                if vin["isAddress"] and (vin.get("isOwn") or block_digest):
+                    if block_digest:
+                        addresses += vin["addresses"]
                     vins.append(
                         {
                             "amount_asset": self._format_value(vin["value"]),
@@ -63,7 +66,9 @@ class BitcoinBlockBookMixin:
                     )
             vouts = []
             for vout in tx["vout"]:
-                if vout.get("isOwn"):
+                if vout["isAddress"] and (vout.get("isOwn") or block_digest):
+                    if block_digest:
+                        addresses += vout["addresses"]
                     vouts.append(
                         {
                             "amount_asset": self._format_value(vout["value"]),
@@ -71,6 +76,9 @@ class BitcoinBlockBookMixin:
                             "address": vout["addresses"][0],
                         }
                     )
+
+            if block_digest:
+                formatted_tx["addresses"] = addresses
             formatted_tx["inputs"] = vins
             formatted_tx["outputs"] = vouts
             formatted_txs.append(formatted_tx)
@@ -79,6 +87,29 @@ class BitcoinBlockBookMixin:
     def get_current_block(self):
         content = self.backend.get_current_block()
         return content["blockbook"]["bestHeight"]
+
+    def get_block_hash(self, block_id):
+        content = self.backend.get_block_index(block_id)
+        return content["blockHash"]
+
+    def get_block(self, block_id):
+        page = 0
+        has_next_page = True
+        content = {}
+        while has_next_page:
+            page += 1
+            page_content = self.backend.get_block(block_id, page=page)
+            if not content:
+                content = {
+                    "block_id": block_id,
+                    "block_hash": page_content["hash"],
+                    "txs": [],
+                }
+            formatted_txs = self._format_txs(page_content["txs"], block_digest=True)
+            content["txs"] += formatted_txs
+            if page_content["page"] >= page_content["totalPages"]:
+                has_next_page = False
+        return content
 
     def get_last_used_address(self, addresses):
         if not addresses:
