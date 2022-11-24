@@ -17,7 +17,6 @@ class BlockAdmin(admin.ModelAdmin):
         "block_hash",
         "is_confirmed",
         "is_orphan",
-        "is_confirmed",
     ]
     list_filter = [
         "protocol_type",
