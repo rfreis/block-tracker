@@ -1,11 +1,11 @@
 from django.contrib import admin
 
-from wallet.models import PublicKey, Address, UserWallet
+from wallet.models import ExtendedPublicKey, Address, UserWallet
 
 
-@admin.register(PublicKey)
-class PublicKeyAdmin(admin.ModelAdmin):
-    model = PublicKey
+@admin.register(ExtendedPublicKey)
+class ExtendedPublicKeyAdmin(admin.ModelAdmin):
+    model = ExtendedPublicKey
     search_fields = [
         "hash",
     ]
@@ -33,7 +33,7 @@ class AddressAdmin(admin.ModelAdmin):
         "hash",
         "is_change",
         "index",
-        "public_key",
+        "extended_public_key",
         "protocol_type",
     ]
     list_filter = [
@@ -55,7 +55,7 @@ class UserWalletAdmin(admin.ModelAdmin):
         "id",
         "user",
         "wallet_type",
-        "public_key",
+        "extended_public_key",
         "address",
         "label",
     ]

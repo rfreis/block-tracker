@@ -3,11 +3,11 @@ from django.core.exceptions import ValidationError
 
 from protocol import Protocol
 from protocol.constants import ProtocolType
-from wallet.models import PublicKey, Address, UserWallet
+from wallet.models import ExtendedPublicKey, Address, UserWallet
 from wallet.constants import WalletType
 
 
-def get_public_key_or_address_form(MyModel, validate_func_name):
+def get_xpublic_key_or_address_form(MyModel, validate_func_name):
     class MyForm(forms.ModelForm):
         class Meta:
             model = MyModel
@@ -22,18 +22,20 @@ def get_public_key_or_address_form(MyModel, validate_func_name):
             protocol = Protocol(protocol_type)
             hash = self.cleaned_data["hash"]
             validate_func = getattr(protocol, validate_func_name)
-            if not validate_func(hash):
-                raise ValidationError("Public Key is not valid")
+            is_obj_valid, semantic = validate_func(hash)
+            if not is_obj_valid:
+                raise ValidationError("Hash is not valid")
+            self.cleaned_data["details"] = {"semantic": semantic}
             return self.cleaned_data
 
         def _post_clean(self):
             super()._post_clean()
-            public_key = PublicKey.objects.filter(
+            my_obj = MyModel.objects.filter(
                 hash=self.cleaned_data["hash"],
                 protocol_type=self.cleaned_data["protocol_type"],
             )
-            if public_key:
-                self.instance = public_key.first()
+            if my_obj:
+                self.instance = my_obj.first()
 
     return MyForm
 
@@ -43,14 +45,14 @@ class UserWalletForm(forms.ModelForm):
         model = UserWallet
         fields = [
             "label",
-            "public_key",
+            "extended_public_key",
             "address",
             "wallet_type",
         ]
 
 
 class CreateUserWalletForm(forms.Form):
-    hash = forms.CharField(label="Public Key or Address")
+    hash = forms.CharField(label="Extended Public Key or Address")
     label = forms.CharField(label="Label")
     protocol_type = forms.ChoiceField(
         label="Protocol",
@@ -69,27 +71,29 @@ class CreateUserWalletForm(forms.Form):
         super().clean()
         protocol_type = int(self.cleaned_data.pop("protocol_type"))
         hash = self.cleaned_data.pop("hash")
-        PublicKeyForm = get_public_key_or_address_form(PublicKey, "validate_public_key")
-        public_key_form = PublicKeyForm(
+        ExtendedPublicKeyForm = get_xpublic_key_or_address_form(
+            ExtendedPublicKey, "validate_xpublic_key"
+        )
+        xpublic_key_form = ExtendedPublicKeyForm(
             {
                 "protocol_type": protocol_type,
                 "hash": hash,
             }
         )
-        AddressForm = get_public_key_or_address_form(Address, "validate_address")
+        AddressForm = get_xpublic_key_or_address_form(Address, "validate_address")
         address_form = AddressForm(
             {
                 "protocol_type": protocol_type,
                 "hash": hash,
             }
         )
-        if public_key_form.is_valid():
-            if not public_key_form.instance.id:
-                public_key_form.save()
+        if xpublic_key_form.is_valid():
+            if not xpublic_key_form.instance.id:
+                xpublic_key_form.save()
             self.user_wallet_form = UserWalletForm(
                 {
-                    "public_key": public_key_form.instance,
-                    "wallet_type": WalletType.PUBLIC_KEY,
+                    "extended_public_key": xpublic_key_form.instance,
+                    "wallet_type": WalletType.EXTENDED_PUBLIC_KEY,
                     "label": self.cleaned_data["label"],
                 }
             )

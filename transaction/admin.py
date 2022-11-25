@@ -1,6 +1,16 @@
 from django.contrib import admin
 
-from transaction.models import Transaction
+from transaction.models import Transaction, InputData, OutputData
+
+
+class InputDataInline(admin.StackedInline):
+    model = InputData
+    classes = ["collapse"]
+
+
+class OutputDataInline(admin.StackedInline):
+    model = OutputData
+    classes = ["collapse"]
 
 
 @admin.register(Transaction)
@@ -8,19 +18,29 @@ class TransactionAdmin(admin.ModelAdmin):
     model = Transaction
     search_fields = [
         "tx_id",
+        "inputs__hash",
+        "outputs__hash",
+        "inputs__extended_public_key__hash",
+        "outputs__extended_public_key__hash",
     ]
     list_display = [
         "id",
         "tx_id",
-        "amount_usd",
-        "amount_asset",
-        "asset",
+        "protocol_type",
         "block_id",
+        "inputs_count",
+        "outputs_count",
         "is_confirmed",
+        "block_time",
     ]
     list_filter = [
-        "address__protocol_type",
+        "protocol_type",
+        "block_time",
         "is_confirmed",
+    ]
+    inlines = [
+        InputDataInline,
+        OutputDataInline,
     ]
 
     def has_change_permission(self, *args, **kwargs):

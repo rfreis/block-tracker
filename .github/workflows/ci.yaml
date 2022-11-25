@@ -47,4 +47,4 @@ jobs:
         DB_PORT: 5432
         SECRET_KEY: secret
       run: |
-        pytest tests/ -v -x
+        pytest tests/ -v -x --ignore=tests/integration
