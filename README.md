@@ -48,8 +48,17 @@ make logs
 ## Tests
 
 ```bash
-make test
+make test # shortcut to e2e and unit tests
+make unit
+make e2e
+make integration
 ```
+
+# Emails
+
+We use [mailhog](https://github.com/mailhog/MailHog) to display the emails sent by SMTP on development server.
+
+The emails sent to SMTP server on `localhost:1025` gets available on [localhost:8025](http://localhost:8025).
 
 ## Workers
 

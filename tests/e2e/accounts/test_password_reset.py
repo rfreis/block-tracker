@@ -49,7 +49,7 @@ def test_password_reset_page(mocker, browser, live_server, user_one):
 
     assert sent_email.to == [user_one.email]
     assert sent_email.subject == f"Password reset on {clean_live_server_str}"
-    assert sent_email.from_email == "test_sender@example.com"
+    assert sent_email.from_email == "webmaster@example.com"
     assert sent_email.body == expected_body_txt
     assert sent_email.alternatives[0][1] == "text/html"
     assert sent_email.alternatives[0][0] == expected_body_html

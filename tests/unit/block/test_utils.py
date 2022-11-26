@@ -102,11 +102,15 @@ def test_confirm_blocks_nothing_new(
 
 @pytest.mark.usefixtures("db")
 def test_confirm_blocks_new_block(
+    mocker,
     block_bitcoin_761592_confirmed,
     block_bitcoin_761593_unconfirmed,
     block_bitcoin_761594_unconfirmed,
     block_bitcoin_761595_unconfirmed,
 ):
+    mock_new_confirmed_transactions = mocker.patch(
+        "transaction.tasks.new_confirmed_transactions.delay"
+    )
     transaction = Transaction.objects.create(
         protocol_type=ProtocolType.BITCOIN, block_id=761593
     )
@@ -124,6 +128,7 @@ def test_confirm_blocks_new_block(
     assert block_bitcoin_761595_unconfirmed.is_confirmed == False
     transaction.refresh_from_db()
     assert transaction.is_confirmed == True
+    mock_new_confirmed_transactions.assert_called_once_with([transaction.id])
 
 
 @pytest.mark.usefixtures("db")
@@ -168,10 +173,21 @@ def test_digest_new_block(
     assert tx_1.details["fee"] == "0.0"
     assert tx_1.details["value_input"] == "0.0"
     assert tx_1.details["value_output"] == "25.1465"
+    assert tx_1.details["asset_name"] == "BTC"
     assert (
         tx_1.details["block_hash"]
         == "00000000000000836597cc216daeda1e7d82361a04312f29bf75c12b511bb2db"
     )
+    assert tx_1.details["inputs"] == [
+        {"address": None, "asset_name": "BTC", "amount_asset": "0.0"}
+    ]
+    assert tx_1.details["outputs"] == [
+        {
+            "address": "14cZMQk89mRYQkDEj8Rn25AnGoBi5H6uer",
+            "asset_name": "BTC",
+            "amount_asset": "25.1465",
+        }
+    ]
     assert tx_1.inputdata.all().count() == 0
     assert tx_1.outputdata.all().count() == 1
     tx_1_output = tx_1.outputdata.first()
@@ -191,10 +207,35 @@ def test_digest_new_block(
     assert tx_2.details["fee"] == "0.0"
     assert tx_2.details["value_input"] == "313.14405178"
     assert tx_2.details["value_output"] == "313.14405178"
+    assert tx_2.details["asset_name"] == "BTC"
     assert (
         tx_2.details["block_hash"]
         == "00000000000000836597cc216daeda1e7d82361a04312f29bf75c12b511bb2db"
     )
+    assert tx_2.details["inputs"] == [
+        {
+            "address": "1Dn274qviAhHXgq4e8Y5XmaBsnjhAB9GR8",
+            "asset_name": "BTC",
+            "amount_asset": "290.14405178",
+        },
+        {
+            "address": "13HLjUPifi1uV9TwAatXGXhgJRg8Tee4EF",
+            "asset_name": "BTC",
+            "amount_asset": "23.0",
+        },
+    ]
+    assert tx_2.details["outputs"] == [
+        {
+            "address": "1Fog84w3gEYkyDN6oaWaXbLuFqEF93uMho",
+            "asset_name": "BTC",
+            "amount_asset": "263.1904335",
+        },
+        {
+            "address": "1EYNR7gGNqepznzjjDV1gsSSj53JopHnSA",
+            "asset_name": "BTC",
+            "amount_asset": "49.95361828",
+        },
+    ]
     assert tx_2.inputdata.all().count() == 1
     assert tx_2.outputdata.all().count() == 1
     tx_2_input = tx_2.inputdata.first()

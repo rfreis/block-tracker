@@ -3,9 +3,9 @@ import logging
 from protocol import Protocol
 
 from block.models import Block
-from wallet.models import Address
 from transaction.models import Transaction
 from transaction.utils import create_transactions
+from transaction.tasks import new_confirmed_transactions
 
 
 logger = logging.getLogger(__name__)
@@ -19,12 +19,12 @@ def confirm_blocks(protocol_type, last_confirmed_block_id):
         is_orphan=False,
     )
     if transactions:
-        transaction_ids = ", ".join(
-            str(x) for x in list(transactions.values_list("id", flat=True))
-        )
+        transaction_ids = list(transactions.values_list("id", flat=True))
+        new_confirmed_transactions.delay(transaction_ids)
+        str_transaction_ids = ", ".join(str(x) for x in transaction_ids)
         logger.info(
             "Found %s (%s) new confirmed transactions."
-            % (transactions.count(), transaction_ids)
+            % (transactions.count(), str_transaction_ids)
         )
         transactions.update(is_confirmed=True)
 
@@ -92,41 +92,13 @@ def check_orphan_blocks(protocol_type, block_id=None):
     check_orphan_blocks(protocol_type, next_block_id)
 
 
-def filter_inputs_or_outputs_by_address(inputs_or_outputs, filtered_addresses):
-    filtered_items = []
-    for item in inputs_or_outputs:
-        if item["address"] in filtered_addresses:
-            filtered_items.append(item)
-    return filtered_items
-
-
 def digest_new_block(protocol_type, last_confirmed_block_id, block_id):
     protocol = Protocol(protocol_type)
     content = protocol.get_block(block_id)
 
-    filtered_transactions = []
     all_transactions = content.pop("txs")
-    for transaction in all_transactions:
-        tx_addresses = transaction.pop("addresses")
-        filtered_addresses = list(
-            Address.objects.filter(
-                protocol_type=protocol_type, hash__in=tx_addresses
-            ).values_list("hash", flat=True)
-        )
-        filtered_inputs = filter_inputs_or_outputs_by_address(
-            transaction["inputs"], filtered_addresses
-        )
-        filtered_outputs = filter_inputs_or_outputs_by_address(
-            transaction["outputs"], filtered_addresses
-        )
-        if not filtered_inputs and not filtered_outputs:
-            continue
 
-        transaction["inputs"] = filtered_inputs
-        transaction["outputs"] = filtered_outputs
-        filtered_transactions.append(transaction)
-
-    create_transactions(filtered_transactions, protocol_type)
+    create_transactions(all_transactions, protocol_type)
 
     is_confirmed = last_confirmed_block_id >= block_id
     Block.objects.create(

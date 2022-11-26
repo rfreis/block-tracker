@@ -1,6 +1,12 @@
 import json
 
 
+def content_from_file(filename):
+    content_file = open(filename, "r")
+    content = content_file.read()
+    return content
+
+
 def json_from_file(filename):
     json_file = open(filename, "r")
     content = json.load(json_file)

@@ -41,10 +41,25 @@ def test_sync_transactions_from_address(
     assert tx_1.details["fee"] == "0.00002048"
     assert tx_1.details["value_input"] == "0.00067396"
     assert tx_1.details["value_output"] == "0.00065348"
+    assert tx_1.details["asset_name"] == "BTC"
     assert (
         tx_1.details["block_hash"]
         == "00000000000000000006a6ffa1419f555e3bf7762b856c66443a2bcfcd2c83b1"
     )
+    assert tx_1.details["inputs"] == [
+        {
+            "address": "1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8",
+            "asset_name": "BTC",
+            "amount_asset": "0.00067396",
+        }
+    ]
+    assert tx_1.details["outputs"] == [
+        {
+            "address": "193P6LtvS4nCnkDvM9uXn1gsSRqh4aDAz7",
+            "asset_name": "BTC",
+            "amount_asset": "0.00065348",
+        }
+    ]
     assert tx_1.inputdata.all().count() == 1
     tx_1_input = tx_1.inputdata.first()
     tx_1_input_address = Address.objects.get(hash="1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8")
@@ -65,10 +80,45 @@ def test_sync_transactions_from_address(
     assert tx_2.details["fee"] == "0.00065804"
     assert tx_2.details["value_input"] == "0.00560766"
     assert tx_2.details["value_output"] == "0.00494962"
+    assert tx_2.details["asset_name"] == "BTC"
     assert (
         tx_2.details["block_hash"]
         == "000000000000000000605d39da6de74631bb1bbcdfb4703cb7f301e236ced12b"
     )
+    assert tx_2.details["inputs"] == [
+        {
+            "address": "3EEAuMT9VeteN4mTcC6NbubSEx94Rfq8C1",
+            "asset_name": "BTC",
+            "amount_asset": "0.0003493",
+        },
+        {
+            "address": "32JnwuVY4aLsPxW9VphZ7CRFwVuCQ2Y2dK",
+            "asset_name": "BTC",
+            "amount_asset": "0.0023231",
+        },
+        {
+            "address": "1PGr6CbRZuVDWVjhqm54WmAenCJyDAG22v",
+            "asset_name": "BTC",
+            "amount_asset": "0.00293526",
+        },
+    ]
+    assert tx_2.details["outputs"] == [
+        {
+            "address": "1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8",
+            "asset_name": "BTC",
+            "amount_asset": "0.00067396",
+        },
+        {
+            "address": "3PPN46QdkkLBs8KEua5v2qPZGy54CYAXTs",
+            "asset_name": "BTC",
+            "amount_asset": "0.00138833",
+        },
+        {
+            "address": "17opNHjQAqBheBubbxRgRQAPrmR6ePsB8k",
+            "asset_name": "BTC",
+            "amount_asset": "0.00288733",
+        },
+    ]
     tx_2_output = tx_2.outputdata.first()
     tx_2_output_address = Address.objects.get(hash="1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8")
     assert tx_2_output_address.extended_public_key == None
@@ -114,6 +164,7 @@ def test_sync_transactions_from_extended_public_key(
     assert tx_1.details["fee"] == "0.00002048"
     assert tx_1.details["value_input"] == "0.00067396"
     assert tx_1.details["value_output"] == "0.00065348"
+    assert tx_1.details["asset_name"] == "BTC"
     assert (
         tx_1.details["block_hash"]
         == "00000000000000000006a6ffa1419f555e3bf7762b856c66443a2bcfcd2c83b1"
@@ -141,6 +192,7 @@ def test_sync_transactions_from_extended_public_key(
     assert tx_2.details["fee"] == "0.00065804"
     assert tx_2.details["value_input"] == "0.00560766"
     assert tx_2.details["value_output"] == "0.00494962"
+    assert tx_2.details["asset_name"] == "BTC"
     assert (
         tx_2.details["block_hash"]
         == "000000000000000000605d39da6de74631bb1bbcdfb4703cb7f301e236ced12b"

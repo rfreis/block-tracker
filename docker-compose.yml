@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  block_tracker:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,18 +13,18 @@ services:
     stdin_open: true
     environment:
       - CHOKIDAR_USEPOLLING=true
+    env_file: ./.env
     ports:
       - 8000:8000
     volumes:
       - .:/app
       # - ./var/site-packages:/usr/local/lib/python3.10/site-packages
-    env_file: ./.env
     depends_on:
-      - block_tracker_db
+      - db
     networks:
-      - dev-tools_payment-network
+      - block-tracker-network
 
-  block_tracker_db:
+  db:
     image: postgres:11.5-alpine
     container_name: block-tracker-db
     tty: true
@@ -32,11 +32,28 @@ services:
       - ../.data/.pgdata-block-tracker:/var/lib/postgresql/data
     env_file: ./.env
     ports:
-      - 5433:5432
+      - 5432:5432
     networks:
-      - dev-tools_payment-network
+      - block-tracker-network
+
+  redis:
+    image: redis:alpine
+    container_name: block-tracker-redis
+    volumes:
+      - ../.data/.redisdata-block-tracker:/data
+    ports:
+      - 6379:6379
+    networks:
+      - block-tracker-network
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports: 
+      - 1025:1025 # smtp server
+      - 8025:8025 # web ui
+    networks:
+      - block-tracker-network
 
 networks:
-  dev-tools_payment-network:
-    external: true
-
+  block-tracker-network:
+    driver: bridge
