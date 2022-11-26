@@ -1,8 +1,19 @@
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+
 from protocol import Protocol
 
 from transaction.models import Transaction
 from wallet.models import Address
 from wallet.utils import derive_remaining_addresses
+
+
+def filter_inputs_or_outputs_by_address(inputs_or_outputs, filtered_addresses):
+    filtered_items = []
+    for item in inputs_or_outputs:
+        if item["address"] in filtered_addresses:
+            filtered_items.append(item)
+    return filtered_items
 
 
 def create_input_and_output_data(
@@ -30,22 +41,42 @@ def create_input_and_output_data(
 
 def create_transactions(formatted_txs, protocol_type, skip_derivation=False):
     for tx in formatted_txs:
+        tx_addresses = tx.pop("addresses")
+        filtered_addresses = list(
+            Address.objects.filter(
+                protocol_type=protocol_type, hash__in=tx_addresses
+            ).values_list("hash", flat=True)
+        )
+        if not filtered_addresses:
+            continue
+
+        inputs = tx.pop("inputs")
+        tx["details"]["inputs"] = json.loads(json.dumps(inputs, cls=DjangoJSONEncoder))
+        outputs = tx.pop("outputs")
+        tx["details"]["outputs"] = json.loads(
+            json.dumps(outputs, cls=DjangoJSONEncoder)
+        )
+        filtered_inputs = filter_inputs_or_outputs_by_address(
+            inputs, filtered_addresses
+        )
+        filtered_outputs = filter_inputs_or_outputs_by_address(
+            outputs, filtered_addresses
+        )
+
         transaction = Transaction.objects.filter(
             protocol_type=protocol_type,
             tx_id=tx["tx_id"],
         )
-        inputs = tx.pop("inputs")
-        outputs = tx.pop("outputs")
         if transaction:
             transaction = transaction.first()
         else:
             transaction = Transaction.objects.create(**tx)
 
         create_input_and_output_data(
-            transaction, inputs, "inputdata", skip_derivation=skip_derivation
+            transaction, filtered_inputs, "inputdata", skip_derivation=skip_derivation
         )
         create_input_and_output_data(
-            transaction, outputs, "outputdata", skip_derivation=skip_derivation
+            transaction, filtered_outputs, "outputdata", skip_derivation=skip_derivation
         )
 
 

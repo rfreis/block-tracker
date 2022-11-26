@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+<body>
+    <p>Hi {{ user.first_name }},</p>
+    <p>You have a new {{ transaction.get_protocol_type_display }} transaction.</p>
+    <ul>
+        <li>Transaction ID: {{ transaction.tx_id }}</li>
+        <li>Block ID: {{ transaction.block_id }}</li>
+    </ul>
+    <table style="border:1px solid #666;border-collapse:collapse;text-align:left;margin-bottom:15px;" border="1" cellspacing="0" cellpadding="8">
+        <tbody>
+            <tr>
+                <th>Inputs</th>
+                <th>{{ transaction.details.value_input }} {{ transaction.details.asset_name }}</th>
+            </tr>
+            {% for inputdata in transaction.details.inputs %}
+            <tr>
+                <td><small>{{ inputdata.address }}</small></td>
+                <td style="text-align: right;">
+                    <small>{{ inputdata.amount_asset }} {{ inputdata.asset_name }}</small>
+                </td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <th>Outputs</th>
+                <th>{{ transaction.details.value_output }} {{ transaction.details.asset_name }}</th>
+            </tr>
+            {% for output in transaction.details.outputs %}
+            <tr>
+                <td><small>{{ output.address }}</small></td>
+                <td style="text-align: right;">
+                    <small>{{ output.amount_asset }} {{ output.asset_name }}</small>
+                </td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <th>Miner fee</th>
+                <th>{{ transaction.details.fee }} {{ transaction.details.asset_name }}</th>
+            </tr>
+        </tbody>
+    </table>
+    <p>
+        With regards, <br>
+        Block Tracker
+    </p>
+</body>
+</html>

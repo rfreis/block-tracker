@@ -1,0 +1,23 @@
+Hi User,
+
+You have a new Bitcoin transaction.
+
+Transaction ID: a0a7e1bb6460bffed958bc80d74966be14fdec09608408de351053d1e8d653a1
+Block ID: 508998
+
+Inputs: 0.00560766 BTC
+- 0.0003493 BTC (3EEAuMT9VeteN4mTcC6NbubSEx94Rfq8C1)
+- 0.0023231 BTC (32JnwuVY4aLsPxW9VphZ7CRFwVuCQ2Y2dK)
+- 0.00293526 BTC (1PGr6CbRZuVDWVjhqm54WmAenCJyDAG22v)
+
+
+Outputs: 0.00494962 BTC
+- 0.00067396 BTC (1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8)
+- 0.00138833 BTC (3PPN46QdkkLBs8KEua5v2qPZGy54CYAXTs)
+- 0.00288733 BTC (17opNHjQAqBheBubbxRgRQAPrmR6ePsB8k)
+
+
+Miner fee: 0.00065804 BTC
+
+With regards,
+Block Tracker

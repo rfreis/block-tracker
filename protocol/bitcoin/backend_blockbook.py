@@ -33,7 +33,7 @@ class BitcoinBlockBookMixin:
     def _format_value(self, value):
         return Decimal(str(int(value) / self.divisible_by))
 
-    def _format_txs(self, txs, block_digest=False):
+    def _format_txs(self, txs):
         formatted_txs = []
         for tx in txs:
             is_confirmed = tx["confirmations"] >= self.required_confirmations
@@ -48,37 +48,34 @@ class BitcoinBlockBookMixin:
                     "value_input": str(self._format_value(tx["valueIn"])),
                     "value_output": str(self._format_value(tx["value"])),
                     "fee": str(self._format_value(tx["fees"])),
+                    "asset_name": self.asset_name,
                     "block_hash": tx["blockHash"],
                 },
             }
             vins = []
             addresses = []
             for vin in tx["vin"]:
-                if vin["isAddress"] and (vin.get("isOwn") or block_digest):
-                    if block_digest:
-                        addresses += vin["addresses"]
-                    vins.append(
-                        {
-                            "amount_asset": self._format_value(vin["value"]),
-                            "asset_name": self.asset_name,
-                            "address": vin["addresses"][0],
-                        }
-                    )
+                if "addresses" in vin:
+                    addresses += vin["addresses"]
+                vins.append(
+                    {
+                        "amount_asset": self._format_value(vin["value"]),
+                        "asset_name": self.asset_name,
+                        "address": vin.get("addresses", [None])[0],
+                    }
+                )
             vouts = []
             for vout in tx["vout"]:
-                if vout["isAddress"] and (vout.get("isOwn") or block_digest):
-                    if block_digest:
-                        addresses += vout["addresses"]
-                    vouts.append(
-                        {
-                            "amount_asset": self._format_value(vout["value"]),
-                            "asset_name": self.asset_name,
-                            "address": vout["addresses"][0],
-                        }
-                    )
+                addresses += vout["addresses"]
+                vouts.append(
+                    {
+                        "amount_asset": self._format_value(vout["value"]),
+                        "asset_name": self.asset_name,
+                        "address": vout.get("addresses", [None])[0],
+                    }
+                )
 
-            if block_digest:
-                formatted_tx["addresses"] = addresses
+            formatted_tx["addresses"] = addresses
             formatted_tx["inputs"] = vins
             formatted_tx["outputs"] = vouts
             formatted_txs.append(formatted_tx)
@@ -105,7 +102,7 @@ class BitcoinBlockBookMixin:
                     "block_hash": page_content["hash"],
                     "txs": [],
                 }
-            formatted_txs = self._format_txs(page_content["txs"], block_digest=True)
+            formatted_txs = self._format_txs(page_content["txs"])
             content["txs"] += formatted_txs
             if page_content["page"] >= page_content["totalPages"]:
                 has_next_page = False

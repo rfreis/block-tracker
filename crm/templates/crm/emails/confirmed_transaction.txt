@@ -1,0 +1,19 @@
+{% load humanize %}Hi {{ user.first_name }},
+
+You have a new {{ transaction.get_protocol_type_display }} transaction.
+
+Transaction ID: {{ transaction.tx_id }}
+Block ID: {{ transaction.block_id }}
+
+Inputs: {{ transaction.details.value_input }} {{ transaction.details.asset_name }}
+{% for inputdata in transaction.details.inputs %}- {{ inputdata.amount_asset }} {{ inputdata.asset_name }} ({{ inputdata.address }})
+{% endfor %}
+
+Outputs: {{ transaction.details.value_output }} {{ transaction.details.asset_name }}
+{% for output in transaction.details.outputs %}- {{ output.amount_asset }} {{ output.asset_name }} ({{ output.address }})
+{% endfor %}
+
+Miner fee: {{ transaction.details.fee }} {{ transaction.details.asset_name }}
+
+With regards,
+Block Tracker

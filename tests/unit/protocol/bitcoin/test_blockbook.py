@@ -59,10 +59,17 @@ def test_get_block(aioresponses, blockbook_block_p1, blockbook_block_p2):
                     "value_input": "0.0",
                     "value_output": "25.1465",
                     "fee": "0.0",
+                    "asset_name": "BTC",
                     "block_hash": "00000000000000836597cc216daeda1e7d82361a04312f29bf75c12b511bb2db",
                 },
                 "addresses": ["14cZMQk89mRYQkDEj8Rn25AnGoBi5H6uer"],
-                "inputs": [],
+                "inputs": [
+                    {
+                        "amount_asset": Decimal("0.0"),
+                        "asset_name": "BTC",
+                        "address": None,
+                    }
+                ],
                 "outputs": [
                     {
                         "amount_asset": Decimal("25.1465"),
@@ -81,6 +88,7 @@ def test_get_block(aioresponses, blockbook_block_p1, blockbook_block_p2):
                     "value_input": "313.14405178",
                     "value_output": "313.14405178",
                     "fee": "0.0",
+                    "asset_name": "BTC",
                     "block_hash": "00000000000000836597cc216daeda1e7d82361a04312f29bf75c12b511bb2db",
                 },
                 "addresses": [
@@ -124,6 +132,7 @@ def test_get_block(aioresponses, blockbook_block_p1, blockbook_block_p2):
                     "value_input": "5.0",
                     "value_output": "5.0",
                     "fee": "0.0",
+                    "asset_name": "BTC",
                     "block_hash": "00000000000000836597cc216daeda1e7d82361a04312f29bf75c12b511bb2db",
                 },
                 "addresses": [
@@ -161,6 +170,7 @@ def test_get_block(aioresponses, blockbook_block_p1, blockbook_block_p2):
                     "value_input": "101.93498796",
                     "value_output": "101.93448796",
                     "fee": "0.0005",
+                    "asset_name": "BTC",
                     "block_hash": "00000000000000836597cc216daeda1e7d82361a04312f29bf75c12b511bb2db",
                 },
                 "addresses": [
@@ -224,8 +234,13 @@ def test_get_transactions_from_xpublic_key(
             "value_input": "0.00067396",
             "value_output": "0.00065348",
             "fee": "0.00002048",
+            "asset_name": "BTC",
             "block_hash": "00000000000000000006a6ffa1419f555e3bf7762b856c66443a2bcfcd2c83b1",
         },
+        "addresses": [
+            "1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8",
+            "193P6LtvS4nCnkDvM9uXn1gsSRqh4aDAz7",
+        ],
         "inputs": [
             {
                 "amount_asset": Decimal("0.00067396"),
@@ -233,7 +248,13 @@ def test_get_transactions_from_xpublic_key(
                 "address": "1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8",
             }
         ],
-        "outputs": [],
+        "outputs": [
+            {
+                "amount_asset": Decimal("0.00065348"),
+                "asset_name": "BTC",
+                "address": "193P6LtvS4nCnkDvM9uXn1gsSRqh4aDAz7",
+            }
+        ],
     }
     assert transactions[1] == {
         "protocol_type": ProtocolType.BITCOIN,
@@ -245,15 +266,50 @@ def test_get_transactions_from_xpublic_key(
             "value_input": "0.00560766",
             "value_output": "0.00494962",
             "fee": "0.00065804",
+            "asset_name": "BTC",
             "block_hash": "000000000000000000605d39da6de74631bb1bbcdfb4703cb7f301e236ced12b",
         },
-        "inputs": [],
+        "addresses": [
+            "3EEAuMT9VeteN4mTcC6NbubSEx94Rfq8C1",
+            "32JnwuVY4aLsPxW9VphZ7CRFwVuCQ2Y2dK",
+            "1PGr6CbRZuVDWVjhqm54WmAenCJyDAG22v",
+            "1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8",
+            "3PPN46QdkkLBs8KEua5v2qPZGy54CYAXTs",
+            "17opNHjQAqBheBubbxRgRQAPrmR6ePsB8k",
+        ],
+        "inputs": [
+            {
+                "amount_asset": Decimal("0.0003493"),
+                "asset_name": "BTC",
+                "address": "3EEAuMT9VeteN4mTcC6NbubSEx94Rfq8C1",
+            },
+            {
+                "amount_asset": Decimal("0.0023231"),
+                "asset_name": "BTC",
+                "address": "32JnwuVY4aLsPxW9VphZ7CRFwVuCQ2Y2dK",
+            },
+            {
+                "amount_asset": Decimal("0.00293526"),
+                "asset_name": "BTC",
+                "address": "1PGr6CbRZuVDWVjhqm54WmAenCJyDAG22v",
+            },
+        ],
         "outputs": [
             {
                 "amount_asset": Decimal("0.00067396"),
                 "asset_name": "BTC",
                 "address": "1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8",
-            }
+            },
+            {
+                "amount_asset": Decimal("0.00138833"),
+                "asset_name": "BTC",
+                "address": "3PPN46QdkkLBs8KEua5v2qPZGy54CYAXTs",
+            },
+            {
+                "amount_asset": Decimal("0.00288733"),
+                "asset_name": "BTC",
+                "address": "17opNHjQAqBheBubbxRgRQAPrmR6ePsB8k",
+            },
         ],
     }
     assert content["last_used_indexes"] == {"P2PKH": {"receive": 24, "change": 0}}
@@ -285,8 +341,13 @@ def test_get_transactions_from_address(
             "value_input": "0.00067396",
             "value_output": "0.00065348",
             "fee": "0.00002048",
+            "asset_name": "BTC",
             "block_hash": "00000000000000000006a6ffa1419f555e3bf7762b856c66443a2bcfcd2c83b1",
         },
+        "addresses": [
+            "1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8",
+            "193P6LtvS4nCnkDvM9uXn1gsSRqh4aDAz7",
+        ],
         "inputs": [
             {
                 "amount_asset": Decimal("0.00067396"),
@@ -294,7 +355,13 @@ def test_get_transactions_from_address(
                 "address": "1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8",
             }
         ],
-        "outputs": [],
+        "outputs": [
+            {
+                "amount_asset": Decimal("0.00065348"),
+                "asset_name": "BTC",
+                "address": "193P6LtvS4nCnkDvM9uXn1gsSRqh4aDAz7",
+            }
+        ],
     }
     assert transactions[1] == {
         "protocol_type": ProtocolType.BITCOIN,
@@ -306,15 +373,50 @@ def test_get_transactions_from_address(
             "value_input": "0.00560766",
             "value_output": "0.00494962",
             "fee": "0.00065804",
+            "asset_name": "BTC",
             "block_hash": "000000000000000000605d39da6de74631bb1bbcdfb4703cb7f301e236ced12b",
         },
-        "inputs": [],
+        "addresses": [
+            "3EEAuMT9VeteN4mTcC6NbubSEx94Rfq8C1",
+            "32JnwuVY4aLsPxW9VphZ7CRFwVuCQ2Y2dK",
+            "1PGr6CbRZuVDWVjhqm54WmAenCJyDAG22v",
+            "1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8",
+            "3PPN46QdkkLBs8KEua5v2qPZGy54CYAXTs",
+            "17opNHjQAqBheBubbxRgRQAPrmR6ePsB8k",
+        ],
+        "inputs": [
+            {
+                "amount_asset": Decimal("0.0003493"),
+                "asset_name": "BTC",
+                "address": "3EEAuMT9VeteN4mTcC6NbubSEx94Rfq8C1",
+            },
+            {
+                "amount_asset": Decimal("0.0023231"),
+                "asset_name": "BTC",
+                "address": "32JnwuVY4aLsPxW9VphZ7CRFwVuCQ2Y2dK",
+            },
+            {
+                "amount_asset": Decimal("0.00293526"),
+                "asset_name": "BTC",
+                "address": "1PGr6CbRZuVDWVjhqm54WmAenCJyDAG22v",
+            },
+        ],
         "outputs": [
             {
                 "amount_asset": Decimal("0.00067396"),
                 "asset_name": "BTC",
                 "address": "1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8",
-            }
+            },
+            {
+                "amount_asset": Decimal("0.00138833"),
+                "asset_name": "BTC",
+                "address": "3PPN46QdkkLBs8KEua5v2qPZGy54CYAXTs",
+            },
+            {
+                "amount_asset": Decimal("0.00288733"),
+                "asset_name": "BTC",
+                "address": "17opNHjQAqBheBubbxRgRQAPrmR6ePsB8k",
+            },
         ],
     }
 

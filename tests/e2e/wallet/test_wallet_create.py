@@ -8,7 +8,6 @@ from wallet.constants import WalletType
 from wallet.models import Address, UserWallet
 
 from tests.e2e.pages.wallet_create import WalletCreatePage
-from wallet.signals import derive_addresses
 
 
 def test_wallet_create_logged_out(browser, live_server):
@@ -18,9 +17,13 @@ def test_wallet_create_logged_out(browser, live_server):
     assert "/accounts/login/?next=/wallet/add/" in browser.current_url
 
 
+@pytest.mark.enable_signals
+@pytest.mark.usefixtures("celery_session_app")
+@pytest.mark.usefixtures("celery_session_worker")
 def test_wallet_create_add_address(
-    browser_user_one, live_server, user_one, hash_address_p2wpkh_bitcoin_one
+    mocker, browser_user_one, live_server, user_one, hash_address_p2wpkh_bitcoin_one
 ):
+    mock_new_address = mocker.patch("wallet.signals.new_address.delay")
     browser_user_one.get("/wallet/add/", live_server)
     page = WalletCreatePage(browser_user_one)
 
@@ -45,12 +48,18 @@ def test_wallet_create_add_address(
     assert user_wallet.address.protocol_type == ProtocolType.BITCOIN
     assert user_wallet.label == "Wallet for Single Address"
     assert user_wallet.wallet_type == WalletType.ADDRESS
+    mock_new_address.assert_called_once_with(user_wallet.address.id)
 
 
 @pytest.mark.enable_signals
+@pytest.mark.usefixtures("celery_session_app")
+@pytest.mark.usefixtures("celery_session_worker")
 def test_wallet_create_add_xpublic_key(
-    browser_user_one, live_server, user_one, hash_xpub_bitcoin_one
+    mocker, browser_user_one, live_server, user_one, hash_xpub_bitcoin_one
 ):
+    mock_new_extended_public_key = mocker.patch(
+        "wallet.signals.new_extended_public_key.delay"
+    )
     browser_user_one.get("/wallet/add/", live_server)
     page = WalletCreatePage(browser_user_one)
 
@@ -80,6 +89,9 @@ def test_wallet_create_add_xpublic_key(
         extended_public_key=user_wallet.extended_public_key
     )
     assert derived_addresses.count() == 84
+    mock_new_extended_public_key.assert_called_once_with(
+        user_wallet.extended_public_key.id
+    )
 
 
 def test_wallet_create_invalid_hash(browser_user_one, live_server):

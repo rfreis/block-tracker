@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "accounts",
     "block",
+    "crm",
     "dashboard",
     "protocol",
     "transaction",
@@ -146,6 +147,13 @@ logging.config.dictConfig(
 
 
 # Email backend
-EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_FILE_PATH = "var/emails/"
+EMAIL_HOST = os.environ.get("EMAIL_SMTP_HOST")
+EMAIL_PORT = os.environ.get("EMAIL_SMTP_PORT")
 DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_FROM")
+
+
+# Celery
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "")

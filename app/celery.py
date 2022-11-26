@@ -10,9 +10,6 @@ SETTINGS_MODULE_PATH = os.environ.get("SETTINGS_MODULE_PATH", "app.settings.loca
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", SETTINGS_MODULE_PATH)
 
 
-BROKER_URL = os.environ.get("CELERY_BROKER", "")
-
-
-app = Celery("backend", broker=BROKER_URL)
+app = Celery("backend")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()

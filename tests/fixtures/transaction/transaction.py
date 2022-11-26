@@ -15,7 +15,42 @@ def transaction_single_bitcoin_address_one(
         "value_input": "0.00560766",
         "value_output": "0.00494962",
         "fee": "0.00065804",
+        "asset_name": "BTC",
         "block_hash": "000000000000000000605d39da6de74631bb1bbcdfb4703cb7f301e236ced12b",
+        "inputs": [
+            {
+                "address": "3EEAuMT9VeteN4mTcC6NbubSEx94Rfq8C1",
+                "asset_name": "BTC",
+                "amount_asset": "0.0003493",
+            },
+            {
+                "address": "32JnwuVY4aLsPxW9VphZ7CRFwVuCQ2Y2dK",
+                "asset_name": "BTC",
+                "amount_asset": "0.0023231",
+            },
+            {
+                "address": "1PGr6CbRZuVDWVjhqm54WmAenCJyDAG22v",
+                "asset_name": "BTC",
+                "amount_asset": "0.00293526",
+            },
+        ],
+        "outputs": [
+            {
+                "address": "1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8",
+                "asset_name": "BTC",
+                "amount_asset": "0.00067396",
+            },
+            {
+                "address": "3PPN46QdkkLBs8KEua5v2qPZGy54CYAXTs",
+                "asset_name": "BTC",
+                "amount_asset": "0.00138833",
+            },
+            {
+                "address": "17opNHjQAqBheBubbxRgRQAPrmR6ePsB8k",
+                "asset_name": "BTC",
+                "amount_asset": "0.00288733",
+            },
+        ],
     }
     transaction = Transaction.objects.create(
         tx_id="a0a7e1bb6460bffed958bc80d74966be14fdec09608408de351053d1e8d653a1",
@@ -52,7 +87,22 @@ def transaction_derived_bitcoin_address_three(
         "value_input": "0.00067396",
         "value_output": "0.00065348",
         "fee": "0.00002048",
+        "asset_name": "BTC",
         "block_hash": "00000000000000000006a6ffa1419f555e3bf7762b856c66443a2bcfcd2c83b1",
+        "inputs": [
+            {
+                "address": "1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8",
+                "asset_name": "BTC",
+                "amount_asset": "0.00067396",
+            }
+        ],
+        "outputs": [
+            {
+                "address": "193P6LtvS4nCnkDvM9uXn1gsSRqh4aDAz7",
+                "asset_name": "BTC",
+                "amount_asset": "0.00065348",
+            }
+        ],
     }
     transaction = Transaction.objects.create(
         tx_id="b62aa5203fa27495ea431b91a5090aab741c8c39cc03ec4c1f4f4e157507595f",
