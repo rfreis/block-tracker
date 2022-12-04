@@ -48,6 +48,7 @@ jobs:
         SECRET_KEY: secret
       run: |
         coverage run -m pytest tests/ -v -x --ignore=tests/integration
+        coverage xml --ignore-errors
 
     - name: Code Coverage Report
       uses: irongut/CodeCoverageSummary@v1.3.0
