@@ -6,10 +6,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-permissions:
-  contents: read
-  issues: write
-
 jobs:
   build:
 
@@ -27,6 +23,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Write a comment
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        message: "# All tests passed 🎉"
     - uses: nanasess/setup-chromedriver@v1
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
@@ -66,8 +66,3 @@ jobs:
 
     - name: Write to Job Summary
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
-
-    - name: Write a comment
-      uses: marocchino/sticky-pull-request-comment@v2
-      with:
-        message: "# All tests passed 🎉"
