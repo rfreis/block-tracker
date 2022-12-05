@@ -65,7 +65,7 @@ jobs:
 
     - name: 'Move content from file to output'
       id: content
-      run: cat code-coverage-results.md >> $GITHUB_OUTPUT
+      run: GITHUB_OUTPUT=$(cat code-coverage-results.md)
 
     - uses: marocchino/sticky-pull-request-comment@v2
       with:
