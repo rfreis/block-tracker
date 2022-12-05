@@ -1,0 +1,40 @@
+name: 'Comment on PR'
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+
+jobs:
+  comment:
+    name: 'Comment on PR'
+    runs-on: ubuntu-20.04
+    if: ${{ github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: coverage
+          path: coverage.xml
+
+      - name: Code Coverage Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: coverage.xml
+          badge: true
+          fail_below_min: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: '60 80'
+
+      - name: 'Move content from file to output'
+        id: content
+        run: cat code-coverage-results.md >> $GITHUB_OUTPUT
+
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          number: ${{ env.PR_NUMBER }}
+          message: ${{ steps.content.outputs.result }}
