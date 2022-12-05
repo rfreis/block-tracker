@@ -1,3 +1,5 @@
+[![CI](https://github.com/rfreis/block-tracker/actions/workflows/ci.yaml/badge.svg)](https://github.com/rfreis/block-tracker/actions/workflows/ci.yaml)
+
 # Block Tracker
 
 This repository runs with `Django 4.1` on `Docker`, `docker-compose` and `postgresql`.
