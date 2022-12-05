@@ -70,4 +70,6 @@ jobs:
 
     - uses: marocchino/sticky-pull-request-comment@v2
       with:
-        message: ${{ steps.content.outputs.result }}
+        message: |
+          Test ${{ github.sha }} ended successfully.
+          ${{ steps.content.outputs.result }}
