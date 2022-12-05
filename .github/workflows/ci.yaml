@@ -63,15 +63,5 @@ jobs:
         output: both
         thresholds: '60 80'
 
-    - name: 'Move content from file to output'
-      id: content
-      run: OUTPUT=$(cat code-coverage-results.md)
-        echo "result=$OUTPUT" >> $GITHUB_OUTPUT
-
-    - name: Create comment
-      uses: peter-evans/create-or-update-comment@v2
-      with:
-        issue-number: ${{ github.event.pull_request.number }}
-        body: |
-          Test ${{ github.sha }} ended successfully.
-          ${{ steps.content.outputs.result }}
+    - name: Write to Job Summary
+      run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
