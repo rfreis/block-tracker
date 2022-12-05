@@ -63,6 +63,11 @@ jobs:
         output: both
         thresholds: '60 80'
 
+    - name: 'Move content from file to output'
+      id: content
+      run: OUTPUT=$(cat code-coverage-results.md)
+        echo "result=$OUTPUT" >> $GITHUB_OUTPUT
+
     - uses: marocchino/sticky-pull-request-comment@v2
       with:
-        path: code-coverage-results.md
+        message: ${{ steps.content.outputs.result }}
