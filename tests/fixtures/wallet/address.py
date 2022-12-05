@@ -12,6 +12,7 @@ def single_bitcoin_address_one(hash_address_p2pkh_bitcoin_three):
     address = Address.objects.create(
         hash=hash_address_p2pkh_bitcoin_three,
         protocol_type=ProtocolType.BITCOIN,
+        balance={"BTC": "0.0"},
     )
 
     yield address

@@ -44,20 +44,23 @@ def test_wallet(browser_user_one, live_server):
     assert len(rows) == 2
 
     headers = page.table_headers
-    assert len(headers) == 3
-    assert headers[0].text == "Protocol"
-    assert headers[1].text == "Label"
+    assert len(headers) == 4
+    assert headers[0].text == "Label"
+    assert headers[1].text == "Protocol"
     assert headers[2].text == "Type"
+    assert headers[3].text == "Balance"
 
     row_1 = rows[0]
     columns_row_1 = page.get_row_columns(row_1)
-    assert columns_row_1[0].text == "Bitcoin"
-    assert columns_row_1[1].text == "Bitcoin Mainnet Single Address"
+    assert columns_row_1[0].text == "Bitcoin Mainnet Single Address"
+    assert columns_row_1[1].text == "Bitcoin"
     assert columns_row_1[2].text == "Address"
+    assert columns_row_1[3].text == "0.0 BTC"
     row_2 = rows[1]
     columns_row_2 = page.get_row_columns(row_2)
-    assert columns_row_2[0].text == "Bitcoin"
-    assert columns_row_2[1].text == "Bitcoin Mainnet Wallet from XPub"
+    assert columns_row_2[0].text == "Bitcoin Mainnet Wallet from XPub"
+    assert columns_row_2[1].text == "Bitcoin"
     assert columns_row_2[2].text == "Extended Public Key"
+    assert columns_row_2[3].text == "0.0 BTC"
 
     assert page.create_wallet_link.is_displayed() == True

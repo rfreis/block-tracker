@@ -12,6 +12,7 @@ def xpublic_key_bitcoin_one(hash_xpub_bitcoin_one):
     xpublic_key = ExtendedPublicKey.objects.create(
         hash=hash_xpub_bitcoin_one,
         protocol_type=ProtocolType.BITCOIN,
+        balance={"BTC": "0.0"},
     )
 
     yield xpublic_key

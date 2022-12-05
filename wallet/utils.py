@@ -1,8 +1,14 @@
+import logging
+from decimal import Decimal
+
 from django.db.models import Count, Q
 
 from protocol import Protocol
 
 from wallet.models import Address
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_last_address_index_from_extended_public_key(
@@ -77,3 +83,21 @@ def derive_remaining_addresses(extended_public_key, semantic, is_change, index=N
             semantic=semantic,
             is_change=is_change,
         )
+
+
+def update_balance(obj, asset_name, amount, attr_name):
+    logger.debug(
+        "Updating balance for %s (#%s). %s %s (%s)"
+        % (obj, obj.id, amount, asset_name, attr_name)
+    )
+    prev_balance = Decimal(obj.balance.get(asset_name, "0.00"))
+    if attr_name == "inputdata":
+        new_balance = prev_balance - Decimal(amount)
+    else:
+        new_balance = prev_balance + Decimal(amount)
+    obj.balance[asset_name] = str(new_balance)
+    obj.save()
+    logger.debug(
+        "Updated balance for %s (#%s). %s %s (%s)"
+        % (obj, obj.id, amount, asset_name, attr_name)
+    )

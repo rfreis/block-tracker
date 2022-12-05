@@ -1,5 +1,6 @@
 import pytest
 from datetime import datetime, timezone
+from decimal import Decimal
 import logging
 
 from block.models import Block
@@ -107,14 +108,14 @@ def test_confirm_blocks_new_block(
     block_bitcoin_761593_unconfirmed,
     block_bitcoin_761594_unconfirmed,
     block_bitcoin_761595_unconfirmed,
+    transaction_single_bitcoin_address_one,
 ):
     mock_new_confirmed_transactions = mocker.patch(
         "transaction.tasks.new_confirmed_transactions.delay"
     )
-    transaction = Transaction.objects.create(
-        protocol_type=ProtocolType.BITCOIN, block_id=761593
-    )
-    assert transaction.is_confirmed == False
+    transaction_single_bitcoin_address_one.block_id = 761593
+    transaction_single_bitcoin_address_one.is_confirmed = False
+    transaction_single_bitcoin_address_one.save()
 
     confirm_blocks(ProtocolType.BITCOIN, 761594)
 
@@ -126,9 +127,21 @@ def test_confirm_blocks_new_block(
     assert block_bitcoin_761593_unconfirmed.is_confirmed == True
     assert block_bitcoin_761594_unconfirmed.is_confirmed == True
     assert block_bitcoin_761595_unconfirmed.is_confirmed == False
-    transaction.refresh_from_db()
-    assert transaction.is_confirmed == True
-    mock_new_confirmed_transactions.assert_called_once_with([transaction.id])
+    transaction_single_bitcoin_address_one.refresh_from_db()
+    assert transaction_single_bitcoin_address_one.is_confirmed == True
+    mock_new_confirmed_transactions.assert_called_once_with(
+        [transaction_single_bitcoin_address_one.id]
+    )
+
+    address_output = Address.objects.get(hash="17opNHjQAqBheBubbxRgRQAPrmR6ePsB8k")
+    assert Decimal(address_output.balance["BTC"]) == Decimal("0.00288733")
+    address_input = Address.objects.get(
+        hash="bc1qatd6clekcdlrjds3dzm64m3ukf9z2vfdz3hajy"
+    )
+    assert Decimal(address_input.balance["BTC"]) == Decimal("-0.00034930")
+    assert Decimal(address_input.extended_public_key.balance["BTC"]) == Decimal(
+        "-0.00034930"
+    )
 
 
 @pytest.mark.usefixtures("db")

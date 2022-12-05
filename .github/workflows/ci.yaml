@@ -70,3 +70,8 @@ jobs:
       uses: marocchino/sticky-pull-request-comment@v2
       with:
         path: code-coverage-results.md
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: coverage.xml

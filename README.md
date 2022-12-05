@@ -1,11 +1,7 @@
-<center>
-
 ![GitHub](https://img.shields.io/github/license/rfreis/block-tracker)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/rfreis/block-tracker)
 [![CI](https://github.com/rfreis/block-tracker/actions/workflows/ci.yaml/badge.svg)](https://github.com/rfreis/block-tracker/actions/workflows/ci.yaml)
 ![GitHub Repo stars](https://img.shields.io/github/stars/rfreis/block-tracker)
-
-</center>
 
 # Block Tracker
 
