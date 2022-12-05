@@ -75,3 +75,4 @@ python manage.py wss_blockbook BITCOIN_TESTNET
 ```bash
 python -m celery -A app worker
 ```
+
