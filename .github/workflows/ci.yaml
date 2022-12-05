@@ -61,14 +61,9 @@ jobs:
         thresholds: '60 80'
 
     - name: Write to Job Summary
-      run: |
-        OUTPUT=$(cat code-coverage-results.md)
-        echo "result=$OUTPUT" >> $GITHUB_OUTPUT
-        echo "$OUTPUT" >> $GITHUB_OUTPUT
+      run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
 
     - name: Write a comment
       uses: marocchino/sticky-pull-request-comment@v2
       with:
-        message: |
-          # All tests passed 🎉 (${{ github.sha }})
-          ${{ steps.content.outputs.result }}
+        path: code-coverage-results.md
