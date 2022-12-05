@@ -70,5 +70,5 @@ jobs:
       uses: marocchino/sticky-pull-request-comment@v2
       with:
         message: |
-        "# All tests passed 🎉 (${{ github.sha }})"
-        "${{ steps.content.outputs.result }}"
+          # All tests passed 🎉 (${{ github.sha }})
+          ${{ steps.content.outputs.result }}
