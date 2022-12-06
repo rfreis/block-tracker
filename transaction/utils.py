@@ -1,11 +1,17 @@
+import logging
 import json
+
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db import transaction as db_transaction
 
 from protocol import Protocol
 
 from transaction.models import Transaction
-from wallet.models import Address
-from wallet.utils import derive_remaining_addresses
+from wallet.models import Address, ExtendedPublicKey
+from wallet.utils import derive_remaining_addresses, update_balance
+
+
+logger = logging.getLogger(__name__)
 
 
 def filter_inputs_or_outputs_by_address(inputs_or_outputs, filtered_addresses):
@@ -21,22 +27,38 @@ def create_input_and_output_data(
 ):
     for item in content:
         address_hash = item.pop("address")
-        address = Address.objects.get(
-            hash=address_hash, protocol_type=transaction.protocol_type
-        )
+        with db_transaction.atomic():
+            address = Address.objects.select_for_update().get(
+                hash=address_hash, protocol_type=transaction.protocol_type
+            )
+            data_queryset = getattr(transaction, attr_name)
+            data_obj = data_queryset.filter(address=address)
+            if not data_obj:
+                item["address"] = address
+                data_obj = data_queryset.create(**item)
+                if transaction.is_confirmed:
+                    update_balance(
+                        address, item["asset_name"], item["amount_asset"], attr_name
+                    )
+                    if address.extended_public_key:
+                        extended_public_key = (
+                            ExtendedPublicKey.objects.select_for_update().get(
+                                id=address.extended_public_key.id
+                            )
+                        )
+                        update_balance(
+                            extended_public_key,
+                            item["asset_name"],
+                            item["amount_asset"],
+                            attr_name,
+                        )
+
         if skip_derivation == False and address.extended_public_key:
             derive_remaining_addresses(
                 address.extended_public_key,
                 address.details["semantic"],
                 address.is_change,
             )
-        item["address"] = address
-        data_queryset = getattr(transaction, attr_name)
-        data_obj = data_queryset.filter(address=item["address"])
-        if data_obj:
-            data_obj = data_obj.first()
-        else:
-            data_obj = data_queryset.create(**item)
 
 
 def create_transactions(formatted_txs, protocol_type, skip_derivation=False):
@@ -63,6 +85,9 @@ def create_transactions(formatted_txs, protocol_type, skip_derivation=False):
             outputs, filtered_addresses
         )
 
+        logger.debug(
+            "Creating transaction for protocol %s %s" % (protocol_type, tx["tx_id"])
+        )
         transaction = Transaction.objects.filter(
             protocol_type=protocol_type,
             tx_id=tx["tx_id"],

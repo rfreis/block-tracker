@@ -9,6 +9,7 @@ from wallet.constants import WalletType
 class ExtendedPublicKey(models.Model):
     hash = models.CharField(max_length=255)
     protocol_type = models.IntegerField(choices=ProtocolType.choices)
+    balance = models.JSONField(default=dict)
     details = models.JSONField(default=dict)
 
     class Meta:
@@ -33,6 +34,7 @@ class Address(models.Model):
         blank=True,
     )
     protocol_type = models.IntegerField(choices=ProtocolType.choices)
+    balance = models.JSONField(default=dict)
     hash = models.CharField(max_length=255, db_index=True)
     is_change = models.BooleanField(default=False)
     index = models.IntegerField(null=True, blank=True)

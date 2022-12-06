@@ -18,18 +18,26 @@
             <table id="wallet_list" class="table table-bordered" width="100%" cellspacing="0">
                 <thead>
                     <tr>
-                        <th>Protocol</th>
                         <th>Label</th>
+                        <th>Protocol</th>
                         <th>Type</th>
+                        <th>Balance</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% if object_list.count %}
                     {% for obj in object_list %}
                     <tr>
-                        <td>{{ obj.content_type.get_protocol_type_display }}</td>
                         <td>{% if obj.label %}{{ obj.label }}{% else %}-{% endif %}</td>
+                        <td>{{ obj.content_type.get_protocol_type_display }}</td>
                         <td>{{ obj.get_wallet_type_display }}</td>
+                        <td>
+                            <ul class="mb-0 pl-3">
+                                {% for asset_name, balance in obj.content_type.balance.items %}
+                                <li>{{ balance }} {{ asset_name }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
                     </tr>
                     {% endfor %}
                     {% else %}

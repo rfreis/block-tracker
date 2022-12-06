@@ -1,5 +1,6 @@
 import pytest
 from datetime import datetime, timezone
+from decimal import Decimal
 
 from protocol.constants import ProtocolType
 from protocol.bitcoin.backend_blockbook import BLOCKBOOK_SETTINGS
@@ -62,10 +63,10 @@ def test_sync_transactions_from_address(
     ]
     assert tx_1.inputdata.all().count() == 1
     tx_1_input = tx_1.inputdata.first()
-    tx_1_input_address = Address.objects.get(hash="1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8")
-    assert tx_1_input_address.extended_public_key == None
-    assert tx_1_input_address.protocol_type == ProtocolType.BITCOIN
-    assert tx_1_input.address == tx_1_input_address
+    address = Address.objects.get(hash="1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8")
+    assert address.extended_public_key == None
+    assert address.protocol_type == ProtocolType.BITCOIN
+    assert tx_1_input.address == address
     assert tx_1_input.amount_usd == None
     assert tx_1_input.amount_asset == "0.00067396"
     assert tx_1_input.asset_name == "BTC"
@@ -120,13 +121,11 @@ def test_sync_transactions_from_address(
         },
     ]
     tx_2_output = tx_2.outputdata.first()
-    tx_2_output_address = Address.objects.get(hash="1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8")
-    assert tx_2_output_address.extended_public_key == None
-    assert tx_2_output_address.protocol_type == ProtocolType.BITCOIN
-    assert tx_2_output.address == tx_2_output_address
+    assert tx_2_output.address == address
     assert tx_2_output.amount_usd == None
     assert tx_2_output.amount_asset == "0.00067396"
     assert tx_2_output.asset_name == "BTC"
+    assert Decimal(address.balance["BTC"]) == Decimal("0")
 
 
 @pytest.mark.usefixtures("db")
@@ -171,13 +170,13 @@ def test_sync_transactions_from_extended_public_key(
     )
     assert tx_1.inputdata.all().count() == 1
     tx_1_input = tx_1.inputdata.first()
-    tx_1_input_address = Address.objects.get(hash="1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8")
-    assert tx_1_input_address.extended_public_key == xpublic_key_bitcoin_two
-    assert tx_1_input_address.protocol_type == ProtocolType.BITCOIN
-    assert tx_1_input_address.is_change == False
-    assert tx_1_input_address.index == 24
-    assert tx_1_input_address.details["semantic"] == "P2PKH"
-    assert tx_1_input.address == tx_1_input_address
+    address = Address.objects.get(hash="1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8")
+    assert address.extended_public_key == xpublic_key_bitcoin_two
+    assert address.protocol_type == ProtocolType.BITCOIN
+    assert address.is_change == False
+    assert address.index == 24
+    assert address.details["semantic"] == "P2PKH"
+    assert tx_1_input.address == address
     assert tx_1_input.amount_usd == None
     assert tx_1_input.amount_asset == "0.00067396"
     assert tx_1_input.asset_name == "BTC"
@@ -198,13 +197,72 @@ def test_sync_transactions_from_extended_public_key(
         == "000000000000000000605d39da6de74631bb1bbcdfb4703cb7f301e236ced12b"
     )
     tx_2_output = tx_2.outputdata.first()
-    tx_2_output_address = Address.objects.get(hash="1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8")
-    assert tx_2_output_address.extended_public_key == xpublic_key_bitcoin_two
-    assert tx_2_output_address.protocol_type == ProtocolType.BITCOIN
-    assert tx_2_output_address.is_change == False
-    assert tx_2_output_address.index == 24
-    assert tx_2_output_address.details["semantic"] == "P2PKH"
-    assert tx_2_output.address == tx_2_output_address
+    assert tx_2_output.address == address
     assert tx_2_output.amount_usd == None
     assert tx_2_output.amount_asset == "0.00067396"
     assert tx_2_output.asset_name == "BTC"
+    assert Decimal(address.balance["BTC"]) == Decimal("0")
+    xpublic_key_bitcoin_two.refresh_from_db()
+    assert Decimal(xpublic_key_bitcoin_two.balance["BTC"]) == Decimal("0")
+
+
+@pytest.mark.usefixtures("db")
+def test_sync_transactions_from_extended_public_key_partial_response(
+    aioresponses,
+    xpublic_key_bitcoin_two,
+    blockbook_xpub_details,
+    blockbook_xpub_details_p2wpkh,
+):
+    queryset = Transaction.objects.all()
+    assert queryset.count() == 0
+
+    blockbook_xpub_details["transactions"] = blockbook_xpub_details["transactions"][:7]
+
+    with aioresponses() as mock:
+        mock.get(
+            f"{BLOCKBOOK_SETTINGS['Bitcoin']['url']}/api/v2/xpub/pkh({xpublic_key_bitcoin_two.hash})?details=txs&tokens=used",
+            payload=blockbook_xpub_details,
+        )
+        mock.get(
+            f"{BLOCKBOOK_SETTINGS['Bitcoin']['url']}/api/v2/xpub/wpkh({xpublic_key_bitcoin_two.hash})?details=txs&tokens=used",
+            payload=blockbook_xpub_details_p2wpkh,
+        )
+        sync_transactions_from_extended_public_key(xpublic_key_bitcoin_two)
+
+    assert queryset.count() == 7
+    xpublic_key_bitcoin_two.refresh_from_db()
+    assert Decimal(xpublic_key_bitcoin_two.balance["BTC"]) == Decimal("-0.00050000")
+    address = Address.objects.get(hash="12CL4K2eVqj7hQTix7dM7CVHCkpP17Pry3")
+    assert Decimal(address.balance["BTC"]) == Decimal("-0.00050000")
+
+
+@pytest.mark.usefixtures("db")
+def test_sync_transactions_from_extended_public_key_partial_response_unconfirmed(
+    aioresponses,
+    xpublic_key_bitcoin_two,
+    blockbook_xpub_details,
+    blockbook_xpub_details_p2wpkh,
+):
+    queryset = Transaction.objects.all()
+    assert queryset.count() == 0
+
+    blockbook_xpub_details["transactions"] = blockbook_xpub_details["transactions"][:7]
+    for transaction in blockbook_xpub_details["transactions"]:
+        transaction["confirmations"] = 0
+
+    with aioresponses() as mock:
+        mock.get(
+            f"{BLOCKBOOK_SETTINGS['Bitcoin']['url']}/api/v2/xpub/pkh({xpublic_key_bitcoin_two.hash})?details=txs&tokens=used",
+            payload=blockbook_xpub_details,
+        )
+        mock.get(
+            f"{BLOCKBOOK_SETTINGS['Bitcoin']['url']}/api/v2/xpub/wpkh({xpublic_key_bitcoin_two.hash})?details=txs&tokens=used",
+            payload=blockbook_xpub_details_p2wpkh,
+        )
+        sync_transactions_from_extended_public_key(xpublic_key_bitcoin_two)
+
+    assert queryset.count() == 7
+    xpublic_key_bitcoin_two.refresh_from_db()
+    assert "BTC" not in xpublic_key_bitcoin_two.balance
+    address = Address.objects.get(hash="12CL4K2eVqj7hQTix7dM7CVHCkpP17Pry3")
+    assert "BTC" not in address.balance

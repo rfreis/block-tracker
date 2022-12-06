@@ -1,11 +1,15 @@
 import logging
 
+from django.db import transaction as db_transaction
+
 from protocol import Protocol
 
 from block.models import Block
 from transaction.models import Transaction
 from transaction.utils import create_transactions
 from transaction.tasks import new_confirmed_transactions
+from wallet.models import Address, ExtendedPublicKey
+from wallet.utils import update_balance
 
 
 logger = logging.getLogger(__name__)
@@ -26,7 +30,38 @@ def confirm_blocks(protocol_type, last_confirmed_block_id):
             "Found %s (%s) new confirmed transactions."
             % (transactions.count(), str_transaction_ids)
         )
-        transactions.update(is_confirmed=True)
+
+        for transaction in transactions:
+            logger.debug(
+                "Confirming transaction for protocol %s %s"
+                % (transaction.protocol_type, transaction.tx_id)
+            )
+            with db_transaction.atomic():
+                for attr_name in ["inputdata", "outputdata"]:
+                    for item_obj in getattr(transaction, attr_name).all():
+                        address = Address.objects.select_for_update().get(
+                            id=item_obj.address.id
+                        )
+                        update_balance(
+                            address,
+                            item_obj.asset_name,
+                            item_obj.amount_asset,
+                            attr_name,
+                        )
+                        if address.extended_public_key:
+                            extended_public_key = (
+                                ExtendedPublicKey.objects.select_for_update().get(
+                                    id=address.extended_public_key.id
+                                )
+                            )
+                            update_balance(
+                                extended_public_key,
+                                item_obj.asset_name,
+                                item_obj.amount_asset,
+                                attr_name,
+                            )
+                transaction.is_confirmed = True
+                transaction.save(update_fields=["is_confirmed"])
 
     blocks = Block.objects.filter(
         protocol_type=protocol_type,

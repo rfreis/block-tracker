@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-permissions:
-  contents: write
-
 jobs:
   build:
 
@@ -70,3 +67,8 @@ jobs:
       uses: marocchino/sticky-pull-request-comment@v2
       with:
         path: code-coverage-results.md
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: coverage.xml
