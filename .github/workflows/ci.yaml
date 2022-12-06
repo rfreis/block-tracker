@@ -47,28 +47,8 @@ jobs:
         coverage run -m pytest tests/ -v -x --ignore=tests/integration
         coverage xml --ignore-errors
 
-    - name: Code Coverage Report
-      uses: irongut/CodeCoverageSummary@v1.3.0
+    - uses: actions/upload-artifact@v3
       with:
-        filename: coverage.xml
-        badge: true
-        fail_below_min: true
-        format: markdown
-        hide_branch_rate: false
-        hide_complexity: true
-        indicators: true
-        output: both
-        thresholds: '60 80'
-
-    - name: Write to Job Summary
-      run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
-
-    - name: Write a comment
-      uses: marocchino/sticky-pull-request-comment@v2
-      with:
-        path: code-coverage-results.md
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        files: coverage.xml
+        name: coverage
+        path: coverage.xml
+        retention-days: 1
