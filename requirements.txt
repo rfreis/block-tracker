@@ -8,4 +8,4 @@ python-socketio==4.6.1
 psycopg2==2.9.3
 pytz==2022.6
 redis==4.3.4
-uvicorn==0.18.3
+uvicorn==0.20.0
