@@ -15,7 +15,6 @@ jobs:
     - uses: actions/download-artifact@v3
       with:
         name: artifact
-        path: artifact.tar
     
     - name: Extract artifact
       run: tar -xvf artifact.tar
