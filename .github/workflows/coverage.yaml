@@ -12,10 +12,13 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-    - uses: actions/checkout@v3
     - uses: actions/download-artifact@v3
       with:
         path: coverage.xml
+    
+    - uses: actions/download-artifact@v3
+      with:
+        path: pr.env
     
     - name: Code Coverage Report
       uses: irongut/CodeCoverageSummary@v1.3.0
@@ -30,12 +33,15 @@ jobs:
         output: both
         thresholds: '60 80'
 
-    - name: Write to Job Summary
-      run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+    - name: Write to Job Summary and Env
+      run: |
+        cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+        cat pr.env >> $GITHUB_ENV
 
     - name: Write a comment
       uses: marocchino/sticky-pull-request-comment@v2
       with:
+        number: ${{ env.PR_NUMBER }}
         path: code-coverage-results.md
 
     - name: Upload coverage to Codecov

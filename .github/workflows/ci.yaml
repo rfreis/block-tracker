@@ -47,7 +47,16 @@ jobs:
         coverage run -m pytest tests/ -v -x --ignore=tests/integration
         coverage xml --ignore-errors
 
+    - name: Save PR data
+      run: |
+        echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> pr.env
+
     - uses: actions/upload-artifact@v3
       with:
         path: coverage.xml
+        retention-days: 1
+
+    - uses: actions/upload-artifact@v3
+      with:
+        path: pr.env
         retention-days: 1
