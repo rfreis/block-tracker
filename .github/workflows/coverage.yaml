@@ -14,29 +14,14 @@ jobs:
     steps:
     - uses: actions/download-artifact@v3
       with:
-        path: coverage.xml
+        name: artifact
+        path: artifact.tar
     
-    - uses: actions/download-artifact@v3
-      with:
-        path: pr.env
+    - name: Extract artifact
+      run: tar -xvf artifact.tar
     
-    - name: Code Coverage Report
-      uses: irongut/CodeCoverageSummary@v1.3.0
-      with:
-        filename: coverage.xml
-        badge: true
-        fail_below_min: true
-        format: markdown
-        hide_branch_rate: false
-        hide_complexity: true
-        indicators: true
-        output: both
-        thresholds: '60 80'
-
-    - name: Write to Job Summary and Env
-      run: |
-        cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
-        cat pr.env >> $GITHUB_ENV
+    - name: Prepare files and variables
+      run: cat pr.env >> $GITHUB_ENV
 
     - name: Write a comment
       uses: marocchino/sticky-pull-request-comment@v2

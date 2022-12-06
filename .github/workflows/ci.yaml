@@ -47,16 +47,27 @@ jobs:
         coverage run -m pytest tests/ -v -x --ignore=tests/integration
         coverage xml --ignore-errors
 
-    - name: Save PR data
+    - name: Code Coverage Report
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        filename: coverage.xml
+        badge: true
+        fail_below_min: true
+        format: markdown
+        hide_branch_rate: false
+        hide_complexity: true
+        indicators: true
+        output: both
+        thresholds: '60 80'
+
+    - name: Prepare files and variables
       run: |
+        cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
         echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> pr.env
+        tar -cvf artifact.tar coverage.xml code-coverage-results.md pr.env
 
     - uses: actions/upload-artifact@v3
       with:
-        path: coverage.xml
-        retention-days: 1
-
-    - uses: actions/upload-artifact@v3
-      with:
-        path: pr.env
+        name: artifact
+        path: artifact.tar
         retention-days: 1
