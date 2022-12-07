@@ -7,5 +7,5 @@ ecdsa==0.18.0
 python-socketio==4.6.1
 psycopg2==2.9.5
 pytz==2022.6
-redis==4.3.4
+redis==4.4.0
 uvicorn==0.20.0
