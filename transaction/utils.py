@@ -35,9 +35,6 @@ def create_input_and_output_data(
             data_obj = data_queryset.filter(address=address)
             if not data_obj:
                 item["address"] = address
-                item["amount_usd"] = get_usd_rate(
-                    item["asset_name"], item["amount_asset"], transaction.block_time
-                )
                 data_obj = data_queryset.create(**item)
                 if transaction.is_confirmed:
                     update_balance(
@@ -64,6 +61,13 @@ def create_input_and_output_data(
             )
 
 
+def add_usd_rates_to_inputs_outputs(data_items, block_time):
+    for data_item in data_items:
+        data_item["amount_usd"] = get_usd_rate(
+            data_item["asset_name"], data_item["amount_asset"], block_time
+        )
+
+
 def create_transactions(formatted_txs, protocol_type, skip_derivation=False):
     for tx in formatted_txs:
         tx_addresses = tx.pop("addresses")
@@ -76,10 +80,21 @@ def create_transactions(formatted_txs, protocol_type, skip_derivation=False):
             continue
 
         inputs = tx.pop("inputs")
+        add_usd_rates_to_inputs_outputs(inputs, tx["block_time"])
         tx["details"]["inputs"] = json.loads(json.dumps(inputs, cls=DjangoJSONEncoder))
         outputs = tx.pop("outputs")
+        add_usd_rates_to_inputs_outputs(outputs, tx["block_time"])
         tx["details"]["outputs"] = json.loads(
             json.dumps(outputs, cls=DjangoJSONEncoder)
+        )
+        tx["details"]["value_input_usd"] = get_usd_rate(
+            tx["details"]["asset_name"], tx["details"]["value_input"], tx["block_time"]
+        )
+        tx["details"]["value_output_usd"] = get_usd_rate(
+            tx["details"]["asset_name"], tx["details"]["value_output"], tx["block_time"]
+        )
+        tx["details"]["fee_usd"] = get_usd_rate(
+            tx["details"]["asset_name"], tx["details"]["fee"], tx["block_time"]
         )
         filtered_inputs = filter_inputs_or_outputs_by_address(
             inputs, filtered_addresses

@@ -1,3 +1,5 @@
+{% load humanize %}
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -16,6 +18,9 @@
             <tr>
                 <th>Inputs</th>
                 <th>{{ transaction.details.value_input }} {{ transaction.details.asset_name }}</th>
+                {% if transaction.details.value_input_usd %}
+                    <th>$ {{ transaction.details.value_input_usd|floatformat:2|intcomma|default:"0.00" }}</th>
+                {% endif %}
             </tr>
             {% for inputdata in transaction.details.inputs %}
             <tr>
@@ -23,11 +28,19 @@
                 <td style="text-align: right;">
                     <small>{{ inputdata.amount_asset }} {{ inputdata.asset_name }}</small>
                 </td>
+                {% if transaction.details.value_input_usd %}
+                    <td style="text-align: right;">
+                        <small>$ {{ inputdata.amount_usd|floatformat:2|intcomma|default:"0.00" }}</small>
+                    </td>
+                {% endif %}
             </tr>
             {% endfor %}
             <tr>
                 <th>Outputs</th>
                 <th>{{ transaction.details.value_output }} {{ transaction.details.asset_name }}</th>
+                {% if transaction.details.value_input_usd %}
+                    <th>$ {{ transaction.details.value_output_usd|floatformat:2|intcomma|default:"0.00" }}</th>
+                {% endif %}
             </tr>
             {% for output in transaction.details.outputs %}
             <tr>
@@ -35,11 +48,19 @@
                 <td style="text-align: right;">
                     <small>{{ output.amount_asset }} {{ output.asset_name }}</small>
                 </td>
+                {% if transaction.details.value_input_usd %}
+                    <td style="text-align: right;">
+                        <small>$ {{ output.amount_usd|floatformat:2|intcomma|default:"0.00" }}</small>
+                    </td>
+                {% endif %}
             </tr>
             {% endfor %}
             <tr>
                 <th>Miner fee</th>
                 <th>{{ transaction.details.fee }} {{ transaction.details.asset_name }}</th>
+                {% if transaction.details.value_input_usd %}
+                    <th>$ {{ transaction.details.fee_usd|floatformat:2|intcomma|default:"0.00" }}</th>
+                {% endif %}
             </tr>
         </tbody>
     </table>

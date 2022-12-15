@@ -5,15 +5,15 @@ You have a new {{ transaction.get_protocol_type_display }} transaction.
 Transaction ID: {{ transaction.tx_id }}
 Block ID: {{ transaction.block_id }}
 
-Inputs: {{ transaction.details.value_input }} {{ transaction.details.asset_name }}
-{% for inputdata in transaction.details.inputs %}- {{ inputdata.amount_asset }} {{ inputdata.asset_name }} ({{ inputdata.address }})
+Inputs: {{ transaction.details.value_input }} {{ transaction.details.asset_name }}{% if transaction.details.value_input_usd %} | $ {{ transaction.details.value_input_usd|floatformat:2|intcomma|default:"0.00" }}{% endif %}
+{% for inputdata in transaction.details.inputs %}- {{ inputdata.amount_asset }} {{ inputdata.asset_name }} ({{ inputdata.address }}){% if transaction.details.value_input_usd %} | $ {{ inputdata.amount_usd|floatformat:2|intcomma|default:"0.00" }}{% endif %}
 {% endfor %}
 
-Outputs: {{ transaction.details.value_output }} {{ transaction.details.asset_name }}
-{% for output in transaction.details.outputs %}- {{ output.amount_asset }} {{ output.asset_name }} ({{ output.address }})
+Outputs: {{ transaction.details.value_output }} {{ transaction.details.asset_name }}{% if transaction.details.value_input_usd %} | $ {{ transaction.details.value_output_usd|floatformat:2|intcomma|default:"0.00" }}{% endif %}
+{% for output in transaction.details.outputs %}- {{ output.amount_asset }} {{ output.asset_name }} ({{ output.address }}){% if transaction.details.value_input_usd %} | $ {{ output.amount_usd|floatformat:2|intcomma|default:"0.00" }}{% endif %}
 {% endfor %}
 
-Miner fee: {{ transaction.details.fee }} {{ transaction.details.asset_name }}
+Miner fee: {{ transaction.details.fee }} {{ transaction.details.asset_name }}{% if transaction.details.value_input_usd %} | $ {{ transaction.details.fee_usd|floatformat:2|intcomma|default:"0.00" }}{% endif %}
 
 With regards,
 Block Tracker
