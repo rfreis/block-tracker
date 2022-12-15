@@ -1,18 +1,65 @@
 import pytest
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from decimal import Decimal
 
 from protocol.constants import ProtocolType
 from protocol.bitcoin.backend_blockbook import BLOCKBOOK_SETTINGS
 from transaction.models import Transaction
 from transaction.utils import (
+    sync_empty_usd_rates,
     sync_transactions_from_address,
     sync_transactions_from_extended_public_key,
 )
 from wallet.models import Address
 
 
+@pytest.mark.usefixtures("db", "rate_bitcoin_daily_five")
+def test_sync_empty_usd_rates(transaction_single_bitcoin_address_one):
+    input_data = transaction_single_bitcoin_address_one.inputdata.all().first()
+    input_data.amount_usd = None
+    input_data.save()
+    input_data.refresh_from_db()
+    output_data = transaction_single_bitcoin_address_one.outputdata.all().first()
+    output_data.amount_usd = None
+    output_data.save()
+    output_data.refresh_from_db()
+    assert input_data.amount_usd == None
+    assert output_data.amount_usd == None
+
+    sync_empty_usd_rates()
+
+    input_data.refresh_from_db()
+    output_data.refresh_from_db()
+    assert input_data.amount_usd == "3.112751521970959190"
+    assert output_data.amount_usd == "25.730148445268850839"
+
+
 @pytest.mark.usefixtures("db")
+def test_sync_empty_usd_rates_out_of_limit(
+    transaction_single_bitcoin_address_one, rate_bitcoin_daily_five
+):
+    input_data = transaction_single_bitcoin_address_one.inputdata.all().first()
+    input_data.amount_usd = None
+    input_data.save()
+    input_data.refresh_from_db()
+    output_data = transaction_single_bitcoin_address_one.outputdata.all().first()
+    output_data.amount_usd = None
+    output_data.save()
+    output_data.refresh_from_db()
+    assert input_data.amount_usd == None
+    assert output_data.amount_usd == None
+    rate_bitcoin_daily_five.time = rate_bitcoin_daily_five.time - timedelta(days=1)
+    rate_bitcoin_daily_five.save()
+
+    sync_empty_usd_rates()
+
+    input_data.refresh_from_db()
+    output_data.refresh_from_db()
+    assert input_data.amount_usd == None
+    assert output_data.amount_usd == None
+
+
+@pytest.mark.usefixtures("db", "rate_bitcoin_daily_five")
 def test_sync_transactions_from_address(
     aioresponses,
     single_bitcoin_address_two,
@@ -43,6 +90,9 @@ def test_sync_transactions_from_address(
     assert tx_1.details["value_input"] == "0.00067396"
     assert tx_1.details["value_output"] == "0.00065348"
     assert tx_1.details["asset_name"] == "BTC"
+    assert tx_1.details["value_input_usd"] == "6.005926183073425868"
+    assert tx_1.details["value_output_usd"] == "5.823420740273639884"
+    assert tx_1.details["fee_usd"] == "0.182505442799785984"
     assert (
         tx_1.details["block_hash"]
         == "00000000000000000006a6ffa1419f555e3bf7762b856c66443a2bcfcd2c83b1"
@@ -50,6 +100,7 @@ def test_sync_transactions_from_address(
     assert tx_1.details["inputs"] == [
         {
             "address": "1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8",
+            "amount_usd": "6.005926183073425868",
             "asset_name": "BTC",
             "amount_asset": "0.00067396",
         }
@@ -57,6 +108,7 @@ def test_sync_transactions_from_address(
     assert tx_1.details["outputs"] == [
         {
             "address": "193P6LtvS4nCnkDvM9uXn1gsSRqh4aDAz7",
+            "amount_usd": "5.823420740273639884",
             "asset_name": "BTC",
             "amount_asset": "0.00065348",
         }
@@ -67,7 +119,7 @@ def test_sync_transactions_from_address(
     assert address.extended_public_key == None
     assert address.protocol_type == ProtocolType.BITCOIN
     assert tx_1_input.address == address
-    assert tx_1_input.amount_usd == None
+    assert tx_1_input.amount_usd == "6.005926183073425868"
     assert tx_1_input.amount_asset == "0.00067396"
     assert tx_1_input.asset_name == "BTC"
     tx_2 = queryset[1]
@@ -82,6 +134,9 @@ def test_sync_transactions_from_address(
     assert tx_2.details["value_input"] == "0.00560766"
     assert tx_2.details["value_output"] == "0.00494962"
     assert tx_2.details["asset_name"] == "BTC"
+    assert tx_2.details["value_input_usd"] == "49.972093328644915578"
+    assert tx_2.details["value_output_usd"] == "44.108036610872885846"
+    assert tx_2.details["fee_usd"] == "5.864056717772029732"
     assert (
         tx_2.details["block_hash"]
         == "000000000000000000605d39da6de74631bb1bbcdfb4703cb7f301e236ced12b"
@@ -89,16 +144,19 @@ def test_sync_transactions_from_address(
     assert tx_2.details["inputs"] == [
         {
             "address": "3EEAuMT9VeteN4mTcC6NbubSEx94Rfq8C1",
+            "amount_usd": "3.11275152197095919",
             "asset_name": "BTC",
             "amount_asset": "0.0003493",
         },
         {
             "address": "32JnwuVY4aLsPxW9VphZ7CRFwVuCQ2Y2dK",
+            "amount_usd": "20.70207002774330173",
             "asset_name": "BTC",
             "amount_asset": "0.0023231",
         },
         {
             "address": "1PGr6CbRZuVDWVjhqm54WmAenCJyDAG22v",
+            "amount_usd": "26.157271778930654658",
             "asset_name": "BTC",
             "amount_asset": "0.00293526",
         },
@@ -106,23 +164,26 @@ def test_sync_transactions_from_address(
     assert tx_2.details["outputs"] == [
         {
             "address": "1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8",
+            "amount_usd": "6.005926183073425868",
             "asset_name": "BTC",
             "amount_asset": "0.00067396",
         },
         {
             "address": "3PPN46QdkkLBs8KEua5v2qPZGy54CYAXTs",
+            "amount_usd": "12.371961982530609139",
             "asset_name": "BTC",
             "amount_asset": "0.00138833",
         },
         {
             "address": "17opNHjQAqBheBubbxRgRQAPrmR6ePsB8k",
+            "amount_usd": "25.730148445268850839",
             "asset_name": "BTC",
             "amount_asset": "0.00288733",
         },
     ]
     tx_2_output = tx_2.outputdata.first()
     assert tx_2_output.address == address
-    assert tx_2_output.amount_usd == None
+    assert tx_2_output.amount_usd == "6.005926183073425868"
     assert tx_2_output.amount_asset == "0.00067396"
     assert tx_2_output.asset_name == "BTC"
     assert Decimal(address.balance["BTC"]) == Decimal("0")
@@ -164,6 +225,9 @@ def test_sync_transactions_from_extended_public_key(
     assert tx_1.details["value_input"] == "0.00067396"
     assert tx_1.details["value_output"] == "0.00065348"
     assert tx_1.details["asset_name"] == "BTC"
+    assert tx_1.details["value_input_usd"] == None
+    assert tx_1.details["value_output_usd"] == None
+    assert tx_1.details["fee_usd"] == None
     assert (
         tx_1.details["block_hash"]
         == "00000000000000000006a6ffa1419f555e3bf7762b856c66443a2bcfcd2c83b1"
@@ -192,6 +256,9 @@ def test_sync_transactions_from_extended_public_key(
     assert tx_2.details["value_input"] == "0.00560766"
     assert tx_2.details["value_output"] == "0.00494962"
     assert tx_2.details["asset_name"] == "BTC"
+    assert tx_2.details["value_input_usd"] == None
+    assert tx_2.details["value_output_usd"] == None
+    assert tx_2.details["fee_usd"] == None
     assert (
         tx_2.details["block_hash"]
         == "000000000000000000605d39da6de74631bb1bbcdfb4703cb7f301e236ced12b"

@@ -5,8 +5,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction as db_transaction
 
 from protocol import Protocol
-
-from transaction.models import Transaction
+from rate.utils import get_usd_rate
+from transaction.models import Transaction, InputData, OutputData
 from wallet.models import Address, ExtendedPublicKey
 from wallet.utils import derive_remaining_addresses, update_balance
 
@@ -61,6 +61,13 @@ def create_input_and_output_data(
             )
 
 
+def add_usd_rates_to_inputs_outputs(data_items, block_time):
+    for data_item in data_items:
+        data_item["amount_usd"] = get_usd_rate(
+            data_item["asset_name"], data_item["amount_asset"], block_time
+        )
+
+
 def create_transactions(formatted_txs, protocol_type, skip_derivation=False):
     for tx in formatted_txs:
         tx_addresses = tx.pop("addresses")
@@ -73,10 +80,21 @@ def create_transactions(formatted_txs, protocol_type, skip_derivation=False):
             continue
 
         inputs = tx.pop("inputs")
+        add_usd_rates_to_inputs_outputs(inputs, tx["block_time"])
         tx["details"]["inputs"] = json.loads(json.dumps(inputs, cls=DjangoJSONEncoder))
         outputs = tx.pop("outputs")
+        add_usd_rates_to_inputs_outputs(outputs, tx["block_time"])
         tx["details"]["outputs"] = json.loads(
             json.dumps(outputs, cls=DjangoJSONEncoder)
+        )
+        tx["details"]["value_input_usd"] = get_usd_rate(
+            tx["details"]["asset_name"], tx["details"]["value_input"], tx["block_time"]
+        )
+        tx["details"]["value_output_usd"] = get_usd_rate(
+            tx["details"]["asset_name"], tx["details"]["value_output"], tx["block_time"]
+        )
+        tx["details"]["fee_usd"] = get_usd_rate(
+            tx["details"]["asset_name"], tx["details"]["fee"], tx["block_time"]
         )
         filtered_inputs = filter_inputs_or_outputs_by_address(
             inputs, filtered_addresses
@@ -133,3 +151,22 @@ def sync_transactions_from_extended_public_key(extended_public_key):
     create_transactions(
         transactions, extended_public_key.protocol_type, skip_derivation=True
     )
+
+
+def sync_empty_usd_rates():
+    data_models = [InputData, OutputData]
+    for DataModel in data_models:
+        queryset = DataModel.objects.filter(amount_usd__isnull=True)
+        logger.debug(
+            "Found %s %s with empty amount_usd" % (queryset.count(), DataModel)
+        )
+        for data_obj in queryset:
+            amount_usd = get_usd_rate(
+                data_obj.asset_name,
+                data_obj.amount_asset,
+                data_obj.transaction.block_time,
+            )
+            if amount_usd:
+                data_obj.amount_usd = amount_usd
+                data_obj.save(update_fields=["amount_usd"])
+                logger.debug("Added amount_usd to %s #%s" % (DataModel, data_obj.id))
