@@ -4,6 +4,7 @@ from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 
 from app.contrib.mixins import BaseContextMixin
+from rate.utils import get_usd_rate
 from wallet.forms import CreateUserWalletForm
 from wallet.models import UserWallet
 

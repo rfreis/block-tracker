@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "crm",
     "dashboard",
     "protocol",
+    "rate",
     "transaction",
     "wallet",
 ]
@@ -157,3 +158,9 @@ DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_FROM")
 # Celery
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "")
+CELERY_BEAT_SCHEDULE = {
+    "refresh-rates": {
+        "task": "rate.tasks.refresh_rates",
+        "schedule": 60 * 5,  # execute every 5 minutes
+    }
+}

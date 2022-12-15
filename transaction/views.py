@@ -10,7 +10,7 @@ from wallet.models import UserWallet
 class TransactionListView(LoginRequiredMixin, BaseContextMixin, ListView):
     app = "transaction"
     page = "list"
-    queryset = Transaction.objects.filter(is_orphan=False).order_by("-id")
+    queryset = Transaction.objects.filter(is_orphan=False).order_by("-block_time")
     template_name = "transaction/list.html"
     title = "Transactions"
 

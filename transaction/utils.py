@@ -5,8 +5,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction as db_transaction
 
 from protocol import Protocol
-
-from transaction.models import Transaction
+from rate.utils import get_usd_rate
+from transaction.models import Transaction, InputData, OutputData
 from wallet.models import Address, ExtendedPublicKey
 from wallet.utils import derive_remaining_addresses, update_balance
 
@@ -35,6 +35,9 @@ def create_input_and_output_data(
             data_obj = data_queryset.filter(address=address)
             if not data_obj:
                 item["address"] = address
+                item["amount_usd"] = get_usd_rate(
+                    item["asset_name"], item["amount_asset"], transaction.block_time
+                )
                 data_obj = data_queryset.create(**item)
                 if transaction.is_confirmed:
                     update_balance(
@@ -133,3 +136,22 @@ def sync_transactions_from_extended_public_key(extended_public_key):
     create_transactions(
         transactions, extended_public_key.protocol_type, skip_derivation=True
     )
+
+
+def sync_empty_usd_rates():
+    data_models = [InputData, OutputData]
+    for DataModel in data_models:
+        queryset = DataModel.objects.filter(amount_usd__isnull=True)
+        logger.debug(
+            "Found %s %s with empty amount_usd" % (queryset.count(), DataModel)
+        )
+        for data_obj in queryset:
+            amount_usd = get_usd_rate(
+                data_obj.asset_name,
+                data_obj.amount_asset,
+                data_obj.transaction.block_time,
+            )
+            if amount_usd:
+                data_obj.amount_usd = amount_usd
+                data_obj.save(update_fields=["amount_usd"])
+                logger.debug("Added amount_usd to %s #%s" % (DataModel, data_obj.id))

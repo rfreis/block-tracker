@@ -60,7 +60,7 @@ make e2e
 make integration
 ```
 
-# Emails
+## Emails
 
 We use [mailhog](https://github.com/mailhog/MailHog) to display the emails sent by SMTP on development server.
 
@@ -76,8 +76,13 @@ python manage.py wss_blockbook BITCOIN
 python manage.py wss_blockbook BITCOIN_TESTNET
 ```
 
-### Celery background worker
+### Celery background worker & beat
 
 ```bash
 python -m celery -A app worker
+python -m celery -A app beat -l info
 ```
+
+## Exchange rates
+
+Initially we use [Coingecko API](https://www.coingecko.com/en/api/documentation) to fetch exchange rates. We try to get a daily rate for the max period as possible and a 5 minutes rate using the `celery beat & worker`.

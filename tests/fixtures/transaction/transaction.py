@@ -62,11 +62,13 @@ def transaction_single_bitcoin_address_one(
     )
     transaction.inputdata.create(
         amount_asset=Decimal("0.00034930"),
+        amount_usd=Decimal("3.112751521970959190"),
         asset_name="BTC",
         address=derived_bitcoin_address_one,
     )
     transaction.outputdata.create(
         amount_asset=Decimal("0.00288733"),
+        amount_usd=Decimal("25.730148445268850839"),
         asset_name="BTC",
         address=single_bitcoin_address_one,
     )

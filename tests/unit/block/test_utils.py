@@ -144,7 +144,7 @@ def test_confirm_blocks_new_block(
     )
 
 
-@pytest.mark.usefixtures("db")
+@pytest.mark.usefixtures("db", "rate_bitcoin_daily_four")
 def test_digest_new_block(
     aioresponses,
     blockbook_block,
@@ -205,7 +205,7 @@ def test_digest_new_block(
     assert tx_1.outputdata.all().count() == 1
     tx_1_output = tx_1.outputdata.first()
     assert tx_1_output.address == single_bitcoin_address_three
-    assert tx_1_output.amount_usd == None
+    assert tx_1_output.amount_usd == "2403.502470"
     assert tx_1_output.amount_asset == "25.1465"
     assert tx_1_output.asset_name == "BTC"
 
@@ -253,12 +253,12 @@ def test_digest_new_block(
     assert tx_2.outputdata.all().count() == 1
     tx_2_input = tx_2.inputdata.first()
     assert tx_2_input.address == single_bitcoin_address_four
-    assert tx_2_input.amount_usd == None
+    assert tx_2_input.amount_usd == "27731.9684691324"
     assert tx_2_input.amount_asset == "290.14405178"
     assert tx_2_input.asset_name == "BTC"
     tx_2_output = tx_2.outputdata.first()
     assert tx_2_output.address == single_bitcoin_address_five
-    assert tx_2_output.amount_usd == None
+    assert tx_2_output.amount_usd == "25155.741633930"
     assert tx_2_output.amount_asset == "263.1904335"
     assert tx_2_output.asset_name == "BTC"
 

@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load humanize wallets %}
 
 {% block content %}
 <!-- Page Heading -->
@@ -21,7 +22,8 @@
                         <th>Label</th>
                         <th>Protocol</th>
                         <th>Type</th>
-                        <th>Balance</th>
+                        <th>Balance Asset</th>
+                        <th>Balance USD</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,6 +38,13 @@
                                 {% for asset_name, balance in obj.content_type.balance.items %}
                                 <li>{{ balance }} {{ asset_name }}</li>
                                 {% endfor %}
+                            </ul>
+                        </td>
+                        <td>
+                            <ul class="mb-0 pl-3">
+                                {% with usd_total=obj.content_type|wallet_balance_usd %}
+                                    <li>$ {{ usd_total|floatformat:2|intcomma|default:"0.00" }}</li>
+                                {% endwith %}
                             </ul>
                         </td>
                     </tr>

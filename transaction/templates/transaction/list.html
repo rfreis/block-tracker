@@ -18,7 +18,8 @@
                     <tr>
                         <th>Protocol</th>
                         <th>Tx. ID</th>
-                        <th>Amount</th>
+                        <th>Amount Asset</th>
+                        <th>Amount USD</th>
                         <th>Is Confirmed</th>
                         <th>Date</th>
                     </tr>
@@ -32,8 +33,15 @@
                         <td>
                             {% with balances=obj|transaction_balance:user_wallets %}
                                 {% for asset_name, balance in balances.items %}
-                                    {{  balance }} {{ asset_name }}
+                                    {% if asset_name != "USD" %}
+                                        {{  balance }} {{ asset_name }}
+                                    {% endif %}
                                 {% endfor %}
+                            {% endwith %}
+                        </td>
+                        <td>
+                            {% with balances=obj|transaction_balance:user_wallets %}
+                            $ {{ balances.USD|floatformat:2|intcomma|default:"0.00" }}
                             {% endwith %}
                         </td>
                         <td>{% if obj.is_confirmed %}Yes{% else %}No{% endif %}</td>
