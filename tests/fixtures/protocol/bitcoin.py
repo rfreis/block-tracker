@@ -1,5 +1,8 @@
 import pytest
+from datetime import datetime, timezone
+from decimal import Decimal
 
+from protocol.constants import ProtocolType
 from tests.fixtures.utils import json_from_file
 
 
@@ -182,3 +185,51 @@ def blockbook_address_details():
         "tests/fixtures/protocol/data/bitcoin_blockbook_address.json"
     )
     return content
+
+
+@pytest.fixture
+def transaction_with_null_char():
+    return {
+        "protocol_type": ProtocolType.BITCOIN,
+        "tx_id": "6ccc2f29784ef63aa9e3e399a606b7634982a1448d3d43946c329e846e0a7f72",
+        "block_id": 767500,
+        "block_time": datetime(2022, 12, 15, 10, 23, 24, tzinfo=timezone.utc),
+        "is_confirmed": True,
+        "details": {
+            "value_input": "1.96294955",
+            "value_output": "1.96290297",
+            "fee": "0.00004658",
+            "asset_name": "BTC",
+            "block_hash": "0000000000000000000400350fe6f501a2eccac3c33e86c90d7094fff447c891",
+        },
+        "addresses": [
+            "bc1qajsvfccw06h758pn3za8wcx7qjztarj53ejjp0rf5a34urmyp74s6psvg8",
+            "OP_RETURN (\x00)",
+            "3Nkf3NY3xht5RNyx1NoxGVYaju2nUF4XQL",
+            "bc1qajsvfccw06h758pn3za8wcx7qjztarj53ejjp0rf5a34urmyp74s6psvg8",
+        ],
+        "inputs": [
+            {
+                "amount_asset": Decimal("1.96294955"),
+                "asset_name": "BTC",
+                "address": "bc1qajsvfccw06h758pn3za8wcx7qjztarj53ejjp0rf5a34urmyp74s6psvg8",
+            }
+        ],
+        "outputs": [
+            {
+                "amount_asset": Decimal("0.0"),
+                "asset_name": "BTC",
+                "address": "OP_RETURN (\x00)",
+            },
+            {
+                "amount_asset": Decimal("0.83877699"),
+                "asset_name": "BTC",
+                "address": "3Nkf3NY3xht5RNyx1NoxGVYaju2nUF4XQL",
+            },
+            {
+                "amount_asset": Decimal("1.12412598"),
+                "asset_name": "BTC",
+                "address": "bc1qajsvfccw06h758pn3za8wcx7qjztarj53ejjp0rf5a34urmyp74s6psvg8",
+            },
+        ],
+    }

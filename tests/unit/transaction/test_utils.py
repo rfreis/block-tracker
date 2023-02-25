@@ -6,6 +6,7 @@ from protocol.constants import ProtocolType
 from protocol.bitcoin.backend_blockbook import BLOCKBOOK_SETTINGS
 from transaction.models import Transaction
 from transaction.utils import (
+    create_transactions,
     sync_empty_usd_rates,
     sync_transactions_from_address,
     sync_transactions_from_extended_public_key,
@@ -333,3 +334,11 @@ def test_sync_transactions_from_extended_public_key_partial_response_unconfirmed
     assert "BTC" not in xpublic_key_bitcoin_two.balance
     address = Address.objects.get(hash="12CL4K2eVqj7hQTix7dM7CVHCkpP17Pry3")
     assert "BTC" not in address.balance
+
+
+@pytest.mark.usefixtures("db")
+def test_create_transaction_with_null_char(
+    transaction_with_null_char,
+):
+    create_transactions([transaction_with_null_char], ProtocolType.BITCOIN)
+    assert Transaction.objects.all().count() == 0

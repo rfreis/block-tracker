@@ -1,6 +1,236 @@
 {% extends 'core/base.html' %}
 
+{% load static humanize transactions %}
+
+{% block page_js %}
+<!-- Dashboard scripts -->
+<script src="{% static 'vendor/chart.js/Chart.min.js' %}"></script>
+<script src="{% static 'js/dashboard.js' %}"></script>
+{{ monthly_amount_usd|json_script:"monthly_amount_usd_data" }}
+{{ asset_dominance|json_script:"asset_dominance_data" }}
+<script>
+    const monthlyDataRaw = document.getElementById("monthly_amount_usd_data");
+    const monthlyData = JSON.parse(monthlyDataRaw.text);
+
+    var portFolioLabels = [];
+    var portFolioData = [];
+    monthlyData.map(item => {
+        portFolioLabels.push(item.date);
+        portFolioData.push(item.total_amount_usd);
+    });
+
+    var myLineChart = startLineChart(portFolioLabels, portFolioData);
+
+    const assetDominanceDataRaw = document.getElementById("asset_dominance_data");
+    const assetDominanceData = JSON.parse(assetDominanceDataRaw.text);
+
+    var dominanceLabels = [];
+    var dominanceData = [];
+    var dominanceBG = [];
+    var dominanceBGHover = [];
+    assetDominanceData.map(item => {
+        dominanceLabels.push(item.asset_name);
+        dominanceData.push(parseInt(item.amount_usd));
+        dominanceBG.push(item.background_color);
+        dominanceBGHover.push(item.background_color_hover);
+    });
+
+    var myPieChart = startPieChart(
+        dominanceLabels,
+        dominanceData,
+        dominanceBG,
+        dominanceBGHover
+    );
+</script>
+{% endblock page_js %}
+
 {% block content %}
 <!-- Page Heading -->
-<h1 class="h3 mb-4 text-gray-800">Blank Page</h1>
+<h1 class="h3 mb-4 text-gray-800">Dashboard</h1>
+
+<!-- Content Row -->
+<div class="row">
+    <!-- Assets Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body dashboard-assets">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Assets</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">${{ current_usd_amount|floatformat:0|intcomma }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Value Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body dashboard-performance">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Performance vs Last Month</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            ${{ performance_vs_last_month|floatformat:0|intcomma }} ({{ performance_vs_last_month_pct|floatformat:1|intcomma }}%)
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Wallets Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body dashboard-wallets">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Wallets</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ user_wallets|length }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-wallet fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Transactions Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body dashboard-transactions">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Transactions</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ transactions_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-money-bill fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content Row -->
+<div class="row">
+    <!-- Area Chart -->
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <!-- Card Header -->
+            <div
+                class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Portfolio Overview</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-area">
+                    <canvas id="portfolioOverviewChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie Chart -->
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <!-- Card Header -->
+            <div
+                class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Assets Dominance</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-pie pt-4 pb-2">
+                    <canvas id="assetDominanceChart"></canvas>
+                </div>
+                <div class="mt-4 text-center small">
+                    {% for dominance in asset_dominance %}
+                    <span class="mr-2">
+                        <i class="fas fa-circle" style="color: {{ dominance.background_color }}"></i> {{ dominance.asset_name }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content Row -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Last Transactions</h6>
+            </div>
+            <div class="card-body p-0 pb-2 dashboard-last-transactions">
+                <div class="table-responsive">
+                    <table id="transaction_list" class="table mb-0" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Protocol</th>
+                                <th>Tx. ID</th>
+                                <th>Amount Asset</th>
+                                <th>Amount USD</th>
+                                <th>Is Confirmed</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if last_transactions %}
+                            {% for transaction in last_transactions %}
+                            <tr>
+                                <td>{{ transaction.get_protocol_type_display }}</td>
+                                <td>{{ transaction.tx_id }}</td>
+                                <td>
+                                    {% with balances=transaction|transaction_balance:user_wallets %}
+                                        {% for asset_name, balance in balances.items %}
+                                            {% if asset_name != "USD" %}
+                                                {{  balance }} {{ asset_name }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endwith %}
+                                </td>
+                                <td>
+                                    {% with balances=transaction|transaction_balance:user_wallets %}
+                                    $ {{ balances.USD|floatformat:2|intcomma|default:"0.00" }}
+                                    {% endwith %}
+                                </td>
+                                <td>{% if transaction.is_confirmed %}Yes{% else %}No{% endif %}</td>
+                                <td>{{ transaction.block_time|date:"d/m/Y" }}</td>
+                                    </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td class="text-center" colspan="6">
+                                    No Transactions were found.
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if last_transactions %}
+                <div class="text-center">
+                    <a href="{% url 'transaction:list' %}">
+                        See more &rarr;
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
 {% endblock content %}

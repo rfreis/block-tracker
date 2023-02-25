@@ -3,15 +3,31 @@ import json
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction as db_transaction
+from django.db.models import Q
 
+from app.celery import app as celery_app
 from protocol import Protocol
 from rate.utils import get_usd_rate
 from transaction.models import Transaction, InputData, OutputData
-from wallet.models import Address, ExtendedPublicKey
-from wallet.utils import derive_remaining_addresses, update_balance
+from wallet.models import Address
+from wallet.utils import derive_remaining_addresses, update_all_balances
 
 
 logger = logging.getLogger(__name__)
+
+
+def get_transactions_from_user(user):
+    queryset = (
+        Transaction.objects.filter(is_orphan=False)
+        .order_by("-block_time")
+        .filter(
+            Q(inputs__user_wallet__user=user)
+            | Q(inputs__extended_public_key__user_wallet__user=user)
+            | Q(outputs__user_wallet__user=user)
+            | Q(outputs__extended_public_key__user_wallet__user=user)
+        )
+    )
+    return queryset.distinct()
 
 
 def filter_inputs_or_outputs_by_address(inputs_or_outputs, filtered_addresses):
@@ -37,21 +53,9 @@ def create_input_and_output_data(
                 item["address"] = address
                 data_obj = data_queryset.create(**item)
                 if transaction.is_confirmed:
-                    update_balance(
+                    update_all_balances(
                         address, item["asset_name"], item["amount_asset"], attr_name
                     )
-                    if address.extended_public_key:
-                        extended_public_key = (
-                            ExtendedPublicKey.objects.select_for_update().get(
-                                id=address.extended_public_key.id
-                            )
-                        )
-                        update_balance(
-                            extended_public_key,
-                            item["asset_name"],
-                            item["amount_asset"],
-                            attr_name,
-                        )
 
         if skip_derivation == False and address.extended_public_key:
             derive_remaining_addresses(
@@ -71,6 +75,7 @@ def add_usd_rates_to_inputs_outputs(data_items, block_time):
 def create_transactions(formatted_txs, protocol_type, skip_derivation=False):
     for tx in formatted_txs:
         tx_addresses = tx.pop("addresses")
+        tx_addresses = [address.replace("\x00", "0x00") for address in tx_addresses]
         filtered_addresses = list(
             Address.objects.filter(
                 protocol_type=protocol_type, hash__in=tx_addresses
@@ -170,3 +175,34 @@ def sync_empty_usd_rates():
                 data_obj.amount_usd = amount_usd
                 data_obj.save(update_fields=["amount_usd"])
                 logger.debug("Added amount_usd to %s #%s" % (DataModel, data_obj.id))
+
+
+def confirm_transactions(transactions):
+    transaction_ids = list(transactions.values_list("id", flat=True))
+    str_transaction_ids = ", ".join(str(x) for x in transaction_ids)
+    logger.info(
+        "Found %s (%s) new confirmed transactions."
+        % (transactions.count(), str_transaction_ids)
+    )
+    for transaction in transactions:
+        logger.debug(
+            "Confirming transaction for protocol %s %s"
+            % (transaction.protocol_type, transaction.tx_id)
+        )
+        with db_transaction.atomic():
+            for attr_name in ["inputdata", "outputdata"]:
+                for item_obj in getattr(transaction, attr_name).all():
+                    address = Address.objects.select_for_update().get(
+                        id=item_obj.address.id
+                    )
+                    update_all_balances(
+                        address,
+                        item_obj.asset_name,
+                        item_obj.amount_asset,
+                        attr_name,
+                    )
+            transaction.is_confirmed = True
+            transaction.save(update_fields=["is_confirmed"])
+    celery_app.send_task(
+        "transaction.tasks.new_confirmed_transactions", (transaction_ids)
+    )

@@ -51,10 +51,13 @@ def test_new_confirmed_transactions_only_user_one(
     )
 
 
-@pytest.mark.usefixtures("db")
-def test_new_address(mocker, single_bitcoin_address_one):
+@pytest.mark.usefixtures("db", "user_wallet_single_bitcoin_address_one", "user_two")
+def test_new_address(mocker, user_one, single_bitcoin_address_one):
     mock_sync_transactions_from_address = mocker.patch(
         "transaction.tasks.sync_transactions_from_address",
+    )
+    mock_sync_user_balance = mocker.patch(
+        "transaction.tasks.sync_user_balance",
     )
 
     new_address(single_bitcoin_address_one.id)
@@ -62,12 +65,17 @@ def test_new_address(mocker, single_bitcoin_address_one):
     mock_sync_transactions_from_address.assert_called_once_with(
         single_bitcoin_address_one
     )
+    mock_sync_user_balance.assert_called_once_with(user_one)
 
 
+@pytest.mark.usefixtures("db", "user_wallet_bitcoin_xpub_one", "user_two")
 @pytest.mark.usefixtures("db")
-def test_new_extended_public_key(mocker, xpublic_key_bitcoin_one):
+def test_new_extended_public_key(mocker, user_one, xpublic_key_bitcoin_one):
     mock_sync_transactions_from_extended_public_key = mocker.patch(
         "transaction.tasks.sync_transactions_from_extended_public_key",
+    )
+    mock_sync_user_balance = mocker.patch(
+        "transaction.tasks.sync_user_balance",
     )
 
     new_extended_public_key(xpublic_key_bitcoin_one.id)
@@ -75,3 +83,4 @@ def test_new_extended_public_key(mocker, xpublic_key_bitcoin_one):
     mock_sync_transactions_from_extended_public_key.assert_called_once_with(
         xpublic_key_bitcoin_one
     )
+    mock_sync_user_balance.assert_called_once_with(user_one)
