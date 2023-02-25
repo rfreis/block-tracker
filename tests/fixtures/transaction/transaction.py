@@ -139,3 +139,99 @@ def transaction_derived_bitcoin_address_three(
     transaction.inputdata.all().delete()
     transaction.outputdata.all().delete()
     transaction.delete()
+
+
+@pytest.fixture
+@pytest.mark.usefixtures("db")
+def transactions_balance(
+    single_bitcoin_address_one,
+    derived_bitcoin_address_one,
+    derived_bitcoin_address_two,
+):
+    transaction_1 = Transaction.objects.create(
+        tx_id="1",
+        block_id=10,
+        block_time=datetime(2022, 1, 1, 12, 00, tzinfo=timezone.utc),
+        protocol_type=ProtocolType.BITCOIN,
+        is_confirmed=True,
+    )
+    transaction_1.outputdata.create(
+        amount_asset=Decimal("0.25"),
+        asset_name="BTC",
+        address=derived_bitcoin_address_one,
+    )
+    transaction_2 = Transaction.objects.create(
+        tx_id="2",
+        block_id=20,
+        block_time=datetime(2022, 2, 1, 12, 00, tzinfo=timezone.utc),
+        protocol_type=ProtocolType.BITCOIN,
+        is_confirmed=True,
+    )
+    transaction_2.outputdata.create(
+        amount_asset=Decimal("0.5"),
+        asset_name="BTC",
+        address=derived_bitcoin_address_one,
+    )
+    transaction_3 = Transaction.objects.create(
+        tx_id="3",
+        block_id=21,
+        block_time=datetime(2022, 2, 1, 14, 00, tzinfo=timezone.utc),
+        protocol_type=ProtocolType.BITCOIN,
+        is_confirmed=True,
+    )
+    transaction_3.inputdata.create(
+        amount_asset=Decimal("0.4"),
+        asset_name="BTC",
+        address=derived_bitcoin_address_one,
+    )
+    transaction_4 = Transaction.objects.create(
+        tx_id="4",
+        block_id=40,
+        block_time=datetime(2022, 5, 1, 12, 00, tzinfo=timezone.utc),
+        protocol_type=ProtocolType.BITCOIN,
+        is_confirmed=True,
+    )
+    transaction_4.outputdata.create(
+        amount_asset=Decimal("2.5"),
+        asset_name="BTC",
+        address=derived_bitcoin_address_two,
+    )
+    transaction_5 = Transaction.objects.create(
+        tx_id="5",
+        block_id=50,
+        block_time=datetime(2022, 5, 31, 12, 00, tzinfo=timezone.utc),
+        protocol_type=ProtocolType.BITCOIN,
+        is_confirmed=True,
+    )
+    transaction_5.outputdata.create(
+        amount_asset=Decimal("1"),
+        asset_name="BTC",
+        address=single_bitcoin_address_one,
+    )
+    transaction_6 = Transaction.objects.create(
+        tx_id="6",
+        block_id=60,
+        block_time=datetime(2022, 6, 1, 12, 00, tzinfo=timezone.utc),
+        protocol_type=ProtocolType.BITCOIN,
+        is_confirmed=False,
+    )
+    transaction_6.outputdata.create(
+        amount_asset=Decimal("100"),
+        asset_name="BTC",
+        address=derived_bitcoin_address_one,
+    )
+    transactions = [
+        transaction_1,
+        transaction_2,
+        transaction_3,
+        transaction_4,
+        transaction_5,
+        transaction_6,
+    ]
+
+    yield transactions
+
+    for transaction in transactions:
+        transaction.inputdata.all().delete()
+        transaction.outputdata.all().delete()
+        transaction.delete()

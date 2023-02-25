@@ -3,9 +3,10 @@ from decimal import Decimal
 
 from django.db.models import Count, Q
 
+from accounts.models import User
+from dashboard.utils import get_or_create_last_user_balance
 from protocol import Protocol
-
-from wallet.models import Address
+from wallet.models import Address, ExtendedPublicKey
 
 
 logger = logging.getLogger(__name__)
@@ -101,3 +102,19 @@ def update_balance(obj, asset_name, amount, attr_name):
         "Updated balance for %s (#%s). %s %s (%s)"
         % (obj, obj.id, amount, asset_name, attr_name)
     )
+
+
+def update_all_balances(address, asset_name, amount, attr_name):
+    update_balance(address, asset_name, amount, attr_name)
+    user_filters = Q(user_wallet__address=address)
+    if address.extended_public_key:
+        extended_public_key = ExtendedPublicKey.objects.select_for_update().get(
+            id=address.extended_public_key.id
+        )
+        update_balance(extended_public_key, asset_name, amount, attr_name)
+        user_filters.add(Q(user_wallet__extended_public_key=extended_public_key), Q.OR)
+
+    users = User.objects.filter(user_filters)
+    for user in users:
+        user_balance = get_or_create_last_user_balance(user, for_update=True)
+        update_balance(user_balance, asset_name, amount, attr_name)

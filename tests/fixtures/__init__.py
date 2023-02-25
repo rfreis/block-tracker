@@ -1,6 +1,7 @@
 from .protocol import *
 from .accounts import *
 from .crm import *
+from .dashboard import *
 from .general import *
 from .rate import *
 from .block import *

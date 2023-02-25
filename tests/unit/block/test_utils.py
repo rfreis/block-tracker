@@ -111,7 +111,7 @@ def test_confirm_blocks_new_block(
     transaction_single_bitcoin_address_one,
 ):
     mock_new_confirmed_transactions = mocker.patch(
-        "transaction.tasks.new_confirmed_transactions.delay"
+        "transaction.utils.celery_app.send_task"
     )
     transaction_single_bitcoin_address_one.block_id = 761593
     transaction_single_bitcoin_address_one.is_confirmed = False
@@ -130,7 +130,8 @@ def test_confirm_blocks_new_block(
     transaction_single_bitcoin_address_one.refresh_from_db()
     assert transaction_single_bitcoin_address_one.is_confirmed == True
     mock_new_confirmed_transactions.assert_called_once_with(
-        [transaction_single_bitcoin_address_one.id]
+        "transaction.tasks.new_confirmed_transactions",
+        [transaction_single_bitcoin_address_one.id],
     )
 
     address_output = Address.objects.get(hash="17opNHjQAqBheBubbxRgRQAPrmR6ePsB8k")

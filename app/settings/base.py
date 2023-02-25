@@ -1,4 +1,5 @@
 import os
+from celery.schedules import crontab
 from pathlib import Path
 
 
@@ -162,5 +163,9 @@ CELERY_BEAT_SCHEDULE = {
     "refresh-rates": {
         "task": "rate.tasks.refresh_rates",
         "schedule": 60 * 5,  # execute every 5 minutes
-    }
+    },
+    "sync-user-balances": {
+        "task": "dashboard.tasks.refresh_user_balances",
+        "schedule": crontab(0, 0, day_of_month="1"),
+    },
 }
