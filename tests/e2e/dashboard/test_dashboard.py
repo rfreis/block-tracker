@@ -30,10 +30,10 @@ def test_dashboard(
 
     assert browser_user_one.title == "Dashboard - Block Tracker"
 
-    assert page.card_assets.text == "ASSETS\n$8,302"
-    assert page.card_performance.text == "PERFORMANCE VS LAST MONTH\n$81 (1.0%)"
-    assert page.card_wallets.text == "WALLETS\n1"
-    assert page.card_transactions.text == "TRANSACTIONS\n1"
+    assert page.card_assets.text.upper() == "ASSETS\n$8,302"
+    assert page.card_performance.text.upper() == "PERFORMANCE VS LAST MONTH\n$81 (1.0%)"
+    assert page.card_wallets.text.upper() == "WALLETS\n1"
+    assert page.card_transactions.text.upper() == "TRANSACTIONS\n1"
 
     rows = page.table_transactions_body_rows
     assert len(rows) == 1
@@ -162,10 +162,10 @@ def test_dashboard_without_rates(
 
     assert browser_user_one.title == "Dashboard - Block Tracker"
 
-    assert page.card_assets.text == "ASSETS\n$0"
-    assert page.card_performance.text == "PERFORMANCE VS LAST MONTH\n$0 (0.0%)"
-    assert page.card_wallets.text == "WALLETS\n1"
-    assert page.card_transactions.text == "TRANSACTIONS\n1"
+    assert page.card_assets.text.upper() == "ASSETS\n$0"
+    assert page.card_performance.text.upper() == "PERFORMANCE VS LAST MONTH\n$0 (0.0%)"
+    assert page.card_wallets.text.upper() == "WALLETS\n1"
+    assert page.card_transactions.text.upper() == "TRANSACTIONS\n1"
 
     res = client_user_one.get("/dashboard/")
     context = res.context[0]
