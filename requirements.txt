@@ -1,4 +1,4 @@
-aiohttp==3.8.3
+aiohttp==3.8.4
 base58==2.1.1
 celery==5.2.7
 Django==4.1.7
