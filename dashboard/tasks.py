@@ -1,10 +1,9 @@
-from celery import shared_task
-
+from app.celery import app as celery_app
 from accounts.models import User
 from dashboard.utils import sync_user_balance
 
 
-@shared_task
+@celery_app.task
 def refresh_user_balances():
     users = User.objects.filter(is_active=True)
     for user in users:
