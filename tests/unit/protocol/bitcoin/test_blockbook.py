@@ -434,3 +434,18 @@ async def test_wss_backend(mocker, block_height_and_hash_tx_xpub_bitcoin_two):
     mock_new_block.assert_called_once_with(
         "block.tasks.new_block_hash", (ProtocolType.BITCOIN, block_hash)
     )
+
+
+def test_get_block_with_empty_address(
+    aioresponses, bitcoin_testnet_block_with_empty_address
+):
+    bitcoin = Bitcoin(ProtocolType.BITCOIN)
+    with aioresponses() as mock:
+        mock.get(
+            f"{BLOCKBOOK_SETTINGS['Bitcoin']['url']}/api/v2/block/2422855?page=1",
+            payload=bitcoin_testnet_block_with_empty_address,
+        )
+        content = bitcoin.get_block(2422855)
+
+    assert len(content["txs"]) == 1
+    assert len(content["txs"][0]["addresses"]) == 1

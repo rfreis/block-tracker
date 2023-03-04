@@ -58,3 +58,11 @@ def invalid_bitcoin_testnet_addresses():
 def ckd_bitcoin_testnet_hashes():
     content = json_from_file("tests/fixtures/protocol/data/bitcoin_testnet_ckd.json")
     return content
+
+
+@pytest.fixture
+def bitcoin_testnet_block_with_empty_address():
+    content = json_from_file(
+        "tests/fixtures/protocol/data/bitcoin_testnet_block_2422855.json"
+    )
+    return content
