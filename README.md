@@ -110,7 +110,7 @@ python manage.py wss_blockbook BITCOIN_TESTNET
 
 ```bash
 python -m celery -A app worker
-python -m celery -A app beat -l info
+python -m celery -A app beat
 ```
 
 # Exchange rates
