@@ -33,6 +33,12 @@ class BitcoinBlockBookMixin:
     def _format_value(self, value):
         return Decimal(str(int(value) / self.divisible_by))
 
+    @staticmethod
+    def _clean_addresses(addresses):
+        if addresses:
+            return addresses[0]
+        return None
+
     def _format_txs(self, txs):
         formatted_txs = []
         for tx in txs:
@@ -55,23 +61,24 @@ class BitcoinBlockBookMixin:
             vins = []
             addresses = []
             for vin in tx["vin"]:
-                if "addresses" in vin:
+                if "addresses" in vin and vin["addresses"] and vin["isAddress"]:
                     addresses += vin["addresses"]
                 vins.append(
                     {
                         "amount_asset": self._format_value(vin["value"]),
                         "asset_name": self.asset_name,
-                        "address": vin.get("addresses", [None])[0],
+                        "address": self._clean_addresses(vin.get("addresses")),
                     }
                 )
             vouts = []
             for vout in tx["vout"]:
-                addresses += vout["addresses"]
+                if "addresses" in vout and vout["addresses"] and vout["isAddress"]:
+                    addresses += vout["addresses"]
                 vouts.append(
                     {
                         "amount_asset": self._format_value(vout["value"]),
                         "asset_name": self.asset_name,
-                        "address": vout.get("addresses", [None])[0],
+                        "address": self._clean_addresses(vout.get("addresses")),
                     }
                 )
 

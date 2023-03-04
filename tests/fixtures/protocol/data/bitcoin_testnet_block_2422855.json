@@ -1,0 +1,62 @@
+{
+    "page": 1,
+    "totalPages": 1,
+    "itemsOnPage": 1000,
+    "hash": "000000009169e6cbea09088d79c591f62425bfb25001a951076a89bf35efd4e3",
+    "previousBlockHash": "000000008b285f62aad448b65f083156354e45f3f433e3fcc8fbc3bf48e291b3",
+    "nextBlockHash": "000000000000002b98ed26b1020d6eabbe126565d4463839d4a9f50f902a9120",
+    "height": 2422855,
+    "confirmations": 23,
+    "size": 176694,
+    "time": 1677958630,
+    "version": 536870912,
+    "merkleRoot": "52e9a41d9cf05e5b3494b4506e76fd5ffe35427b412a9b20b32a7fcc3c9f5768",
+    "nonce": "2162054464",
+    "bits": "1d00ffff",
+    "difficulty": "1",
+    "txCount": 71,
+    "txs": [
+        {
+            "txid": "e734eb3348aa04c71662b6482f07f00f7f23e769737f2b10b98f33888a339d73",
+            "vin": [
+                {
+                    "n": 0,
+                    "isAddress": false,
+                    "value": "0"
+                }
+            ],
+            "vout": [
+                {
+                    "value": "3011591",
+                    "n": 0,
+                    "addresses": [
+                        "n33npN2oRNJFFpdoxkrm2CVyZAfRGFxALt"
+                    ],
+                    "isAddress": true
+                },
+                {
+                    "value": "0",
+                    "n": 1,
+                    "addresses": [
+                        "OP_RETURN aa21a9edf66f3ca2afc4231df46324822a4136379745acff49297ccbf7b48f1c008f30d6"
+                    ],
+                    "isAddress": false
+                },
+                {
+                    "value": "0",
+                    "n": 2,
+                    "addresses": null,
+                    "isAddress": false
+                }
+            ],
+            "blockHash": "000000009169e6cbea09088d79c591f62425bfb25001a951076a89bf35efd4e3",
+            "blockHeight": 2422855,
+            "confirmations": 23,
+            "blockTime": 1677958630,
+            "vsize": 242,
+            "value": "3011591",
+            "valueIn": "0",
+            "fees": "0"
+        }
+    ]
+}
