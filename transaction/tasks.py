@@ -1,9 +1,10 @@
-from celery import shared_task
 import logging
 
+from app.celery import app as celery_app
 from accounts.models import User
 from crm.utils import send_confirmed_transaction
 from dashboard.utils import sync_user_balance
+from protocol.utils.exceptions import ClientException
 from wallet.models import Address, ExtendedPublicKey
 from transaction.models import Transaction
 from transaction.utils import (
@@ -26,7 +27,7 @@ def get_users_from_addresses(addresses):
     return users
 
 
-@shared_task
+@celery_app.task
 def new_confirmed_transactions(transaction_ids):
     transactions = Transaction.objects.filter(
         id__in=transaction_ids,
@@ -40,7 +41,11 @@ def new_confirmed_transactions(transaction_ids):
             send_confirmed_transaction(user, transaction)
 
 
-@shared_task
+@celery_app.task(
+    autoretry_for=(ClientException,),
+    retry_backoff=True,
+    retry_kwargs={"max_retries": 5},
+)
 def new_address(address_id):
     address = Address.objects.get(id=address_id)
     sync_transactions_from_address(address)
@@ -49,7 +54,11 @@ def new_address(address_id):
         sync_user_balance(user)
 
 
-@shared_task
+@celery_app.task(
+    autoretry_for=(ClientException,),
+    retry_backoff=True,
+    retry_kwargs={"max_retries": 5},
+)
 def new_extended_public_key(extended_public_key_id):
     extended_public_key = ExtendedPublicKey.objects.get(id=extended_public_key_id)
     sync_transactions_from_extended_public_key(extended_public_key)
