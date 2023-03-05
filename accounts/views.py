@@ -1,7 +1,15 @@
-from django.contrib.auth import views as auth_views
+from django.contrib.auth import (
+    views as auth_views,
+    login as auth_login,
+)
 from django.urls import reverse_lazy
+from django.views.generic.base import TemplateResponseMixin
+from django.views.generic.edit import BaseCreateView
 
 from app.contrib.mixins import BaseContextMixin
+
+from accounts.forms import RegisterForm
+from dashboard.utils import sync_user_balance
 
 
 class LoginView(BaseContextMixin, auth_views.LoginView):
@@ -11,6 +19,25 @@ class LoginView(BaseContextMixin, auth_views.LoginView):
 
 class LogoutView(auth_views.LogoutView):
     next_page = "accounts:login"
+
+
+class RegisterView(BaseContextMixin, BaseCreateView, TemplateResponseMixin):
+    template_name = "accounts/register.html"
+    title = "Register"
+    form_class = RegisterForm
+    success_url = reverse_lazy("dashboard:dashboard")
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        user = self.object
+        sync_user_balance(user)
+        auth_login(self.request, user)
+        return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["email"] = self.request.GET.get("email")
+        return context
 
 
 class PasswordChangeView(auth_views.PasswordChangeView):
