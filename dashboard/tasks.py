@@ -1,5 +1,5 @@
-from app.celery import app as celery_app
 from accounts.models import User
+from app.celery import app as celery_app
 from dashboard.utils import sync_user_balance
 
 

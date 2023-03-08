@@ -1,5 +1,6 @@
-from aiohttp import ClientSession
 from datetime import datetime, timezone
+
+from aiohttp import ClientSession
 
 from rate.constants import RateInterval
 

@@ -5,6 +5,9 @@ force-exclude = '''
     |env
     |venv
     |.venv
-    |etc
+    |var
 )/
 '''
+
+[tool.isort]
+profile = "black"

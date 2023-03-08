@@ -1,4 +1,4 @@
-import pytest
+import pytest  # noqa: F401
 from freezegun import freeze_time
 
 from tests.e2e.pages.dashboard_page import DashboardPage

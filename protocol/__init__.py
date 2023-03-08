@@ -1,5 +1,5 @@
-from protocol.constants import ProtocolType
 from protocol.bitcoin import Bitcoin, BitcoinTestnet
+from protocol.constants import ProtocolType
 
 
 class Protocol:

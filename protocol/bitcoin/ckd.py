@@ -1,5 +1,5 @@
-from protocol.utils.xpublic_key import deserialize_xpub
 from protocol.utils.ckd import child_xpub_derivation
+from protocol.utils.xpublic_key import deserialize_xpub
 
 
 class BitcoinCKDMixin:

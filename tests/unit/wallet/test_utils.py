@@ -1,7 +1,6 @@
-import pytest
-from freezegun import freeze_time
-
+import pytest  # noqa: F401
 from django.db import transaction as db_transaction
+from freezegun import freeze_time
 
 from wallet.models import Address
 from wallet.utils import (
@@ -46,7 +45,7 @@ def test_update_all_balances(
     derived_bitcoin_address_one,
     derived_bitcoin_address_two,
     single_bitcoin_address_one,
-    user_balance_two_empty,
+    user_balance_one,
 ):
     with db_transaction.atomic():
         update_all_balances(
@@ -70,11 +69,11 @@ def test_update_all_balances(
 
     derived_bitcoin_address_one.refresh_from_db()
     derived_bitcoin_address_one.extended_public_key.refresh_from_db()
-    user_balance_two_empty.refresh_from_db()
+    user_balance_one.refresh_from_db()
 
     assert derived_bitcoin_address_one.balance["BTC"] == "0.35"
     assert derived_bitcoin_address_one.extended_public_key.balance["BTC"] == "0.35"
-    assert user_balance_two_empty.balance["BTC"] == "0.35"
+    assert user_balance_one.balance["BTC"] == "0.35"
 
     with db_transaction.atomic():
         update_all_balances(
@@ -92,7 +91,7 @@ def test_update_all_balances(
 
     derived_bitcoin_address_one.refresh_from_db()
     derived_bitcoin_address_one.extended_public_key.refresh_from_db()
-    user_balance_two_empty.refresh_from_db()
+    user_balance_one.refresh_from_db()
     derived_bitcoin_address_two.refresh_from_db()
     single_bitcoin_address_one.refresh_from_db()
 
@@ -100,4 +99,4 @@ def test_update_all_balances(
     assert derived_bitcoin_address_two.balance["BTC"] == "2.50"
     assert derived_bitcoin_address_one.extended_public_key.balance["BTC"] == "2.85"
     assert single_bitcoin_address_one.balance["BTC"] == "1.0"
-    assert user_balance_two_empty.balance["BTC"] == "3.85"
+    assert user_balance_one.balance["BTC"] == "3.85"

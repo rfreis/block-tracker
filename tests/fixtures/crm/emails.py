@@ -1,4 +1,4 @@
-import pytest
+import pytest  # noqa: F401
 
 from tests.fixtures.utils import content_from_file
 

@@ -1,5 +1,5 @@
-import logging
 import json
+import logging
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction as db_transaction
@@ -8,10 +8,9 @@ from django.db.models import Q
 from app.celery import app as celery_app
 from protocol import Protocol
 from rate.utils import get_usd_rate
-from transaction.models import Transaction, InputData, OutputData
+from transaction.models import InputData, OutputData, Transaction
 from wallet.models import Address
 from wallet.utils import derive_remaining_addresses, update_all_balances
-
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +56,7 @@ def create_input_and_output_data(
                         address, item["asset_name"], item["amount_asset"], attr_name
                     )
 
-        if skip_derivation == False and address.extended_public_key:
+        if skip_derivation is False and address.extended_public_key:
             derive_remaining_addresses(
                 address.extended_public_key,
                 address.details["semantic"],

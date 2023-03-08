@@ -35,6 +35,12 @@ jobs:
     - name: Style with black
       run: |
         black --check .
+    - name: Imports with isort
+      run: |
+        isort --check-only .
+    - name: Lint with flake8
+      run: |
+        flake8 .
     - name: Test with pytest
       env:
         POSTGRES_DB: db_database

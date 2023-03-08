@@ -1,9 +1,10 @@
-import pytest
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
-from protocol.constants import ProtocolType
+import pytest  # noqa: F401
+
 from protocol.bitcoin.backend_blockbook import BLOCKBOOK_SETTINGS
+from protocol.constants import ProtocolType
 from transaction.models import Transaction
 from transaction.utils import (
     create_transactions,
@@ -24,8 +25,8 @@ def test_sync_empty_usd_rates(transaction_single_bitcoin_address_one):
     output_data.amount_usd = None
     output_data.save()
     output_data.refresh_from_db()
-    assert input_data.amount_usd == None
-    assert output_data.amount_usd == None
+    assert input_data.amount_usd is None
+    assert output_data.amount_usd is None
 
     sync_empty_usd_rates()
 
@@ -47,8 +48,8 @@ def test_sync_empty_usd_rates_out_of_limit(
     output_data.amount_usd = None
     output_data.save()
     output_data.refresh_from_db()
-    assert input_data.amount_usd == None
-    assert output_data.amount_usd == None
+    assert input_data.amount_usd is None
+    assert output_data.amount_usd is None
     rate_bitcoin_daily_five.time = rate_bitcoin_daily_five.time - timedelta(days=1)
     rate_bitcoin_daily_five.save()
 
@@ -56,8 +57,8 @@ def test_sync_empty_usd_rates_out_of_limit(
 
     input_data.refresh_from_db()
     output_data.refresh_from_db()
-    assert input_data.amount_usd == None
-    assert output_data.amount_usd == None
+    assert input_data.amount_usd is None
+    assert output_data.amount_usd is None
 
 
 @pytest.mark.usefixtures("db", "rate_bitcoin_daily_five")
@@ -86,7 +87,7 @@ def test_sync_transactions_from_address(
     assert tx_1.protocol_type == ProtocolType.BITCOIN
     assert tx_1.block_id == 509003
     assert tx_1.block_time == datetime(2018, 2, 13, 14, 29, tzinfo=timezone.utc)
-    assert tx_1.is_confirmed == True
+    assert tx_1.is_confirmed is True
     assert tx_1.details["fee"] == "0.00002048"
     assert tx_1.details["value_input"] == "0.00067396"
     assert tx_1.details["value_output"] == "0.00065348"
@@ -117,7 +118,7 @@ def test_sync_transactions_from_address(
     assert tx_1.inputdata.all().count() == 1
     tx_1_input = tx_1.inputdata.first()
     address = Address.objects.get(hash="1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8")
-    assert address.extended_public_key == None
+    assert address.extended_public_key is None
     assert address.protocol_type == ProtocolType.BITCOIN
     assert tx_1_input.address == address
     assert tx_1_input.amount_usd == "6.005926183073425868"
@@ -130,7 +131,7 @@ def test_sync_transactions_from_address(
     assert tx_2.protocol_type == ProtocolType.BITCOIN
     assert tx_2.block_id == 508998
     assert tx_2.block_time == datetime(2018, 2, 13, 13, 52, 16, tzinfo=timezone.utc)
-    assert tx_2.is_confirmed == True
+    assert tx_2.is_confirmed is True
     assert tx_2.details["fee"] == "0.00065804"
     assert tx_2.details["value_input"] == "0.00560766"
     assert tx_2.details["value_output"] == "0.00494962"
@@ -221,14 +222,14 @@ def test_sync_transactions_from_extended_public_key(
     assert tx_1.protocol_type == ProtocolType.BITCOIN
     assert tx_1.block_id == 509003
     assert tx_1.block_time == datetime(2018, 2, 13, 14, 29, tzinfo=timezone.utc)
-    assert tx_1.is_confirmed == True
+    assert tx_1.is_confirmed is True
     assert tx_1.details["fee"] == "0.00002048"
     assert tx_1.details["value_input"] == "0.00067396"
     assert tx_1.details["value_output"] == "0.00065348"
     assert tx_1.details["asset_name"] == "BTC"
-    assert tx_1.details["value_input_usd"] == None
-    assert tx_1.details["value_output_usd"] == None
-    assert tx_1.details["fee_usd"] == None
+    assert tx_1.details["value_input_usd"] is None
+    assert tx_1.details["value_output_usd"] is None
+    assert tx_1.details["fee_usd"] is None
     assert (
         tx_1.details["block_hash"]
         == "00000000000000000006a6ffa1419f555e3bf7762b856c66443a2bcfcd2c83b1"
@@ -238,11 +239,11 @@ def test_sync_transactions_from_extended_public_key(
     address = Address.objects.get(hash="1JEYhhAGC2JkLJhdnC1tWk2CtH64sX2Ur8")
     assert address.extended_public_key == xpublic_key_bitcoin_two
     assert address.protocol_type == ProtocolType.BITCOIN
-    assert address.is_change == False
+    assert address.is_change is False
     assert address.index == 24
     assert address.details["semantic"] == "P2PKH"
     assert tx_1_input.address == address
-    assert tx_1_input.amount_usd == None
+    assert tx_1_input.amount_usd is None
     assert tx_1_input.amount_asset == "0.00067396"
     assert tx_1_input.asset_name == "BTC"
     tx_2 = queryset[1]
@@ -252,21 +253,21 @@ def test_sync_transactions_from_extended_public_key(
     assert tx_2.protocol_type == ProtocolType.BITCOIN
     assert tx_2.block_id == 508998
     assert tx_2.block_time == datetime(2018, 2, 13, 13, 52, 16, tzinfo=timezone.utc)
-    assert tx_2.is_confirmed == True
+    assert tx_2.is_confirmed is True
     assert tx_2.details["fee"] == "0.00065804"
     assert tx_2.details["value_input"] == "0.00560766"
     assert tx_2.details["value_output"] == "0.00494962"
     assert tx_2.details["asset_name"] == "BTC"
-    assert tx_2.details["value_input_usd"] == None
-    assert tx_2.details["value_output_usd"] == None
-    assert tx_2.details["fee_usd"] == None
+    assert tx_2.details["value_input_usd"] is None
+    assert tx_2.details["value_output_usd"] is None
+    assert tx_2.details["fee_usd"] is None
     assert (
         tx_2.details["block_hash"]
         == "000000000000000000605d39da6de74631bb1bbcdfb4703cb7f301e236ced12b"
     )
     tx_2_output = tx_2.outputdata.first()
     assert tx_2_output.address == address
-    assert tx_2_output.amount_usd == None
+    assert tx_2_output.amount_usd is None
     assert tx_2_output.amount_asset == "0.00067396"
     assert tx_2_output.asset_name == "BTC"
     assert Decimal(address.balance["BTC"]) == Decimal("0")

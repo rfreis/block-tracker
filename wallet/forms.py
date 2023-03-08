@@ -3,8 +3,8 @@ from django.core.exceptions import ValidationError
 
 from protocol import Protocol
 from protocol.constants import ProtocolType
-from wallet.models import ExtendedPublicKey, Address, UserWallet
 from wallet.constants import WalletType
+from wallet.models import Address, ExtendedPublicKey, UserWallet
 
 
 def get_xpublic_key_or_address_form(MyModel, validate_func_name):

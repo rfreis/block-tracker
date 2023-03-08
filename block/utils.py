@@ -1,11 +1,9 @@
 import logging
 
-from protocol import Protocol
-
 from block.models import Block
+from protocol import Protocol
 from transaction.models import Transaction
 from transaction.utils import confirm_transactions, create_transactions
-
 
 logger = logging.getLogger(__name__)
 

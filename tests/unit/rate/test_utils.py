@@ -1,5 +1,6 @@
-import pytest
 from datetime import datetime, timezone
+
+import pytest  # noqa: F401
 from freezegun import freeze_time
 
 from rate.constants import RateInterval

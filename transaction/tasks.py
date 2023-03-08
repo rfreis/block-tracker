@@ -1,17 +1,16 @@
 import logging
 
-from app.celery import app as celery_app
 from accounts.models import User
+from app.celery import app as celery_app
 from crm.utils import send_confirmed_transaction
 from dashboard.utils import sync_user_balance
 from protocol.utils.exceptions import ClientException
-from wallet.models import Address, ExtendedPublicKey
 from transaction.models import Transaction
 from transaction.utils import (
     sync_transactions_from_address,
     sync_transactions_from_extended_public_key,
 )
-
+from wallet.models import Address, ExtendedPublicKey
 
 logger = logging.getLogger(__name__)
 

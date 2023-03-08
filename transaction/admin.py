@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from transaction.models import Transaction, InputData, OutputData
+from transaction.models import InputData, OutputData, Transaction
 
 
 class InputDataInline(admin.StackedInline):

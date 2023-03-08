@@ -1,7 +1,6 @@
-import pytest
-from freezegun import freeze_time
-
+import pytest  # noqa: F401
 from django.core import mail
+from freezegun import freeze_time
 
 from crm.utils import send_confirmed_transaction
 

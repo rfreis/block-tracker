@@ -8,7 +8,6 @@ from dashboard.utils import get_or_create_last_user_balance
 from protocol import Protocol
 from wallet.models import Address, ExtendedPublicKey
 
-
 logger = logging.getLogger(__name__)
 
 

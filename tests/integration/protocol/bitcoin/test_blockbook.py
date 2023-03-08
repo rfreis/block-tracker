@@ -1,4 +1,4 @@
-import pytest
+import pytest  # noqa: F401
 
 from protocol import Protocol, ProtocolType
 
@@ -40,7 +40,7 @@ def test_block():
     transactions = block_content["txs"]
     coinbase_transaction = transactions[0]
     coinbase_vin = coinbase_transaction["vin"][0]
-    assert coinbase_vin["isAddress"] == False
+    assert coinbase_vin["isAddress"] is False
     assert coinbase_vin["value"] == "0"
 
     transaction = transactions[1]

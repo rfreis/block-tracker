@@ -2,14 +2,13 @@
 # https://github.com/cameronmaske/django-drf-testing/blob/signals-example/tests/intergration_tests/conftest.py
 # There was no declared license when I copied from there
 
-import pytest
-
+import pytest  # noqa: F401
 from django.db.models.signals import (
-    pre_save,
+    m2m_changed,
+    post_delete,
     post_save,
     pre_delete,
-    post_delete,
-    m2m_changed,
+    pre_save,
 )
 
 

@@ -1,4 +1,4 @@
-import pytest
+import pytest  # noqa: F401
 
 from tests.fixtures.utils import json_from_file
 

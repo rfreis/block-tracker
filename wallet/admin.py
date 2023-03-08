@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from wallet.models import ExtendedPublicKey, Address, UserWallet
+from wallet.models import Address, ExtendedPublicKey, UserWallet
 
 
 @admin.register(ExtendedPublicKey)

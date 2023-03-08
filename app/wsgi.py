@@ -11,7 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-
 SETTINGS_MODULE_PATH = os.environ.get("SETTINGS_MODULE_PATH", "app.settings.local")
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", SETTINGS_MODULE_PATH)

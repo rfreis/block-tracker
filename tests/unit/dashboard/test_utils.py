@@ -1,5 +1,6 @@
-import pytest
 from datetime import date, datetime, timezone
+
+import pytest  # noqa: F401
 from freezegun import freeze_time
 
 from dashboard.models import UserBalance

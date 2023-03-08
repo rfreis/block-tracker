@@ -1,10 +1,9 @@
+from datetime import datetime, timezone
 from decimal import Decimal
 
 from django import template
 
 from rate.utils import get_usd_rate
-from datetime import datetime, timezone
-
 
 register = template.Library()
 

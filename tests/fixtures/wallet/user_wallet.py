@@ -1,4 +1,4 @@
-import pytest
+import pytest  # noqa: F401
 
 from wallet.constants import WalletType
 from wallet.models import UserWallet

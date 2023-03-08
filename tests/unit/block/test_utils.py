@@ -1,7 +1,8 @@
-import pytest
+import logging
 from datetime import datetime, timezone
 from decimal import Decimal
-import logging
+
+import pytest  # noqa: F401
 
 from block.models import Block
 from block.utils import (
@@ -29,8 +30,8 @@ def test_check_orphan_blocks(
 
     block_bitcoin_761592_confirmed.refresh_from_db()
     block_bitcoin_761593_unconfirmed.refresh_from_db()
-    assert block_bitcoin_761592_confirmed.is_orphan == False
-    assert block_bitcoin_761593_unconfirmed.is_orphan == False
+    assert block_bitcoin_761592_confirmed.is_orphan is False
+    assert block_bitcoin_761593_unconfirmed.is_orphan is False
 
 
 @pytest.mark.usefixtures("db")
@@ -40,7 +41,7 @@ def test_check_orphan_blocks_orphaned(
     transaction = Transaction.objects.create(
         protocol_type=ProtocolType.BITCOIN, block_id=761593
     )
-    assert transaction.is_orphan == False
+    assert transaction.is_orphan is False
 
     with aioresponses() as mock:
         mock.get(
@@ -55,10 +56,10 @@ def test_check_orphan_blocks_orphaned(
 
     block_bitcoin_761592_confirmed.refresh_from_db()
     block_bitcoin_761593_unconfirmed.refresh_from_db()
-    assert block_bitcoin_761592_confirmed.is_orphan == False
-    assert block_bitcoin_761593_unconfirmed.is_orphan == True
+    assert block_bitcoin_761592_confirmed.is_orphan is False
+    assert block_bitcoin_761593_unconfirmed.is_orphan is True
     transaction.refresh_from_db()
-    assert transaction.is_orphan == True
+    assert transaction.is_orphan is True
 
 
 @pytest.mark.usefixtures("db")
@@ -82,8 +83,8 @@ def test_check_orphan_blocks_confirmed_orphan(
 
     block_bitcoin_761592_confirmed.refresh_from_db()
     block_bitcoin_761593_unconfirmed.refresh_from_db()
-    assert block_bitcoin_761592_confirmed.is_orphan == False
-    assert block_bitcoin_761593_unconfirmed.is_orphan == True
+    assert block_bitcoin_761592_confirmed.is_orphan is False
+    assert block_bitcoin_761593_unconfirmed.is_orphan is True
     assert isinstance(exc.value, Exception)
     assert str(exc.value) == "Critical: confirmed block is orphan"
     assert "Confirmed block 761592 is orphan for protocol 1" in caplog.text
@@ -97,8 +98,8 @@ def test_confirm_blocks_nothing_new(
 
     block_bitcoin_761592_confirmed.refresh_from_db()
     block_bitcoin_761593_unconfirmed.refresh_from_db()
-    assert block_bitcoin_761592_confirmed.is_confirmed == True
-    assert block_bitcoin_761593_unconfirmed.is_confirmed == False
+    assert block_bitcoin_761592_confirmed.is_confirmed is True
+    assert block_bitcoin_761593_unconfirmed.is_confirmed is False
 
 
 @pytest.mark.usefixtures("db")
@@ -123,12 +124,12 @@ def test_confirm_blocks_new_block(
     block_bitcoin_761593_unconfirmed.refresh_from_db()
     block_bitcoin_761594_unconfirmed.refresh_from_db()
     block_bitcoin_761595_unconfirmed.refresh_from_db()
-    assert block_bitcoin_761592_confirmed.is_confirmed == True
-    assert block_bitcoin_761593_unconfirmed.is_confirmed == True
-    assert block_bitcoin_761594_unconfirmed.is_confirmed == True
-    assert block_bitcoin_761595_unconfirmed.is_confirmed == False
+    assert block_bitcoin_761592_confirmed.is_confirmed is True
+    assert block_bitcoin_761593_unconfirmed.is_confirmed is True
+    assert block_bitcoin_761594_unconfirmed.is_confirmed is True
+    assert block_bitcoin_761595_unconfirmed.is_confirmed is False
     transaction_single_bitcoin_address_one.refresh_from_db()
-    assert transaction_single_bitcoin_address_one.is_confirmed == True
+    assert transaction_single_bitcoin_address_one.is_confirmed is True
     mock_new_confirmed_transactions.assert_called_once_with(
         "transaction.tasks.new_confirmed_transactions",
         [transaction_single_bitcoin_address_one.id],
@@ -170,8 +171,8 @@ def test_digest_new_block(
         block.block_hash
         == "00000000000000836597cc216daeda1e7d82361a04312f29bf75c12b511bb2db"
     )
-    assert block.is_confirmed == False
-    assert block.is_orphan == False
+    assert block.is_confirmed is False
+    assert block.is_orphan is False
 
     txs = Transaction.objects.all()
     assert txs.count() == 2
@@ -183,7 +184,7 @@ def test_digest_new_block(
     assert tx_1.protocol_type == ProtocolType.BITCOIN
     assert tx_1.block_id == 246469
     assert tx_1.block_time == datetime(2013, 7, 14, 4, 0, 52, tzinfo=timezone.utc)
-    assert tx_1.is_confirmed == True
+    assert tx_1.is_confirmed is True
     assert tx_1.details["fee"] == "0.0"
     assert tx_1.details["value_input"] == "0.0"
     assert tx_1.details["value_output"] == "25.1465"
@@ -223,7 +224,7 @@ def test_digest_new_block(
     assert tx_2.protocol_type == ProtocolType.BITCOIN
     assert tx_2.block_id == 246469
     assert tx_2.block_time == datetime(2013, 7, 14, 4, 0, 52, tzinfo=timezone.utc)
-    assert tx_2.is_confirmed == True
+    assert tx_2.is_confirmed is True
     assert tx_2.details["fee"] == "0.0"
     assert tx_2.details["value_input"] == "313.14405178"
     assert tx_2.details["value_output"] == "313.14405178"
@@ -291,7 +292,7 @@ def test_digest_new_block_confirmed_block(aioresponses, blockbook_block):
     blocks = Block.objects.all()
     assert blocks.count() == 1
     block = blocks.first()
-    assert block.is_confirmed == True
+    assert block.is_confirmed is True
 
 
 @pytest.mark.usefixtures(
