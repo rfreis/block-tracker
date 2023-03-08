@@ -50,7 +50,7 @@ jobs:
         DB_PORT: 5432
         SECRET_KEY: secret
       run: |
-        coverage run -m pytest tests/ -v -x --ignore=tests/integration
+        coverage run --omit=tests/* -m pytest tests/ -v -x --ignore=tests/integration
         coverage xml --ignore-errors
 
     - name: Code Coverage Report
