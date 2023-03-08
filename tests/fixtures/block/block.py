@@ -1,7 +1,7 @@
-import pytest
+import pytest  # noqa: F401
 
-from protocol.constants import ProtocolType
 from block.models import Block
+from protocol.constants import ProtocolType
 
 
 @pytest.fixture
@@ -55,36 +55,6 @@ def block_bitcoin_761595_unconfirmed(block_hashes_by_id):
     block = Block.objects.create(
         block_id=761595,
         block_hash=block_hashes_by_id[761595],
-        protocol_type=ProtocolType.BITCOIN,
-        is_confirmed=False,
-    )
-
-    yield block
-
-    block.delete()
-
-
-@pytest.fixture
-@pytest.mark.usefixtures("db")
-def block_bitcoin_761596_unconfirmed(block_hashes_by_id):
-    block = Block.objects.create(
-        block_id=761596,
-        block_hash=block_hashes_by_id[761596],
-        protocol_type=ProtocolType.BITCOIN,
-        is_confirmed=False,
-    )
-
-    yield block
-
-    block.delete()
-
-
-@pytest.fixture
-@pytest.mark.usefixtures("db")
-def block_bitcoin_761597_unconfirmed(block_hashes_by_id):
-    block = Block.objects.create(
-        block_id=761597,
-        block_hash=block_hashes_by_id[761597],
         protocol_type=ProtocolType.BITCOIN,
         is_confirmed=False,
     )

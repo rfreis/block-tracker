@@ -4,7 +4,6 @@ from decimal import Decimal
 
 from protocol.utils.blockbook import BlockBookClient
 
-
 BLOCKBOOK_SETTINGS = {
     "Bitcoin": {
         "url": os.environ.get("BITCOIN_BLOCKBOOK_URL", ""),

@@ -1,8 +1,8 @@
-import ecdsa
 import hashlib
 import hmac
-from base58 import b58encode_check
 
+import ecdsa
+from base58 import b58encode_check
 
 CURVE_GEN = ecdsa.ecdsa.generator_secp256k1
 CURVE_ORDER = CURVE_GEN.order()
@@ -14,7 +14,9 @@ def child_xpub_derivation(child_index, parent_deserialized_key):
     child_index_bytes = child_index.to_bytes(4, "big")
     data = parent_deserialized_key["key"] + child_index_bytes
 
-    I = hmac.new(parent_deserialized_key["chaincode"], data, hashlib.sha512).digest()
+    I = hmac.new(  # noqa: E741
+        parent_deserialized_key["chaincode"], data, hashlib.sha512
+    ).digest()
     Ileft, Iright = I[:32], I[32:]
     child_chaincode = Iright
 

@@ -1,5 +1,4 @@
-import pytest
-
+import pytest  # noqa: F401
 from selenium.webdriver import Chrome as SeleniumChrome
 from selenium.webdriver.chrome.options import Options
 

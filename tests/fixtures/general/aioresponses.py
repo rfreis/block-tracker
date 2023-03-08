@@ -1,5 +1,4 @@
-import pytest
-
+import pytest  # noqa: F401
 from aioresponses import aioresponses as original_aioresponses
 
 

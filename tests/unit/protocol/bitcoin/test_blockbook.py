@@ -1,6 +1,7 @@
-import pytest
 from datetime import datetime, timezone
 from decimal import Decimal
+
+import pytest  # noqa: F401
 
 from protocol.bitcoin import Bitcoin
 from protocol.bitcoin.backend_blockbook import BLOCKBOOK_SETTINGS

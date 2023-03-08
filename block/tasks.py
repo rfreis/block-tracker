@@ -4,7 +4,6 @@ from app.celery import app as celery_app
 from block.utils import sync_chain_of_blocks
 from protocol.utils.exceptions import ClientException
 
-
 logger = logging.getLogger(__name__)
 
 

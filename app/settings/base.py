@@ -1,7 +1,8 @@
+import logging.config
 import os
-from celery.schedules import crontab
 from pathlib import Path
 
+from celery.schedules import crontab
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -113,9 +114,6 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Logging
-import logging.config
-
-# Clear prev config
 LOGGING_CONFIG = None
 
 # Get loglevel from env

@@ -1,4 +1,4 @@
-from django.core.management import BaseCommand, CommandError
+from django.core.management import BaseCommand
 
 from rate.utils import sync_rates
 

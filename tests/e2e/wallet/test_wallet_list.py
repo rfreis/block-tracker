@@ -1,4 +1,4 @@
-import pytest
+import pytest  # noqa: F401
 
 from tests.e2e.pages.wallet_list import WalletListPage
 
@@ -66,4 +66,4 @@ def test_wallet(browser_user_one, live_server):
     assert columns_row_2[3].text == "0.0 BTC"
     assert columns_row_2[4].text == "$ 0.00"
 
-    assert page.create_wallet_link.is_displayed() == True
+    assert page.create_wallet_link.is_displayed() is True

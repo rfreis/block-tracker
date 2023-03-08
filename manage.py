@@ -3,7 +3,6 @@
 import os
 import sys
 
-
 SETTINGS_MODULE_PATH = os.environ.get("SETTINGS_MODULE_PATH", "app.settings.local")
 
 

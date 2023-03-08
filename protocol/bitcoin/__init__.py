@@ -1,4 +1,8 @@
 from protocol.base import ProtocolBase
+from protocol.bitcoin.backend_blockbook import BitcoinBlockBookMixin
+from protocol.bitcoin.ckd import BitcoinCKDMixin
+from protocol.bitcoin.validate import BitcoinValidateMixin
+from protocol.bitcoin.websocket_blockbook import BitcoinSocketIOMixin
 from protocol.utils.address import (
     generate_p2pkh,
     generate_p2wpkh,
@@ -6,11 +10,6 @@ from protocol.utils.address import (
     validate_bech32,
 )
 from protocol.utils.xpublic_key import validate_xpub
-from protocol.bitcoin.ckd import BitcoinCKDMixin
-from protocol.bitcoin.validate import BitcoinValidateMixin
-from protocol.bitcoin.backend_blockbook import BitcoinBlockBookMixin
-from protocol.bitcoin.websocket_blockbook import BitcoinSocketIOMixin
-
 
 __all__ = ["Bitcoin", "BitcoinTestnet"]
 

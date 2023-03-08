@@ -1,6 +1,5 @@
-import pytest
-
-from django.core.management import call_command, CommandError
+import pytest  # noqa: F401
+from django.core.management import CommandError, call_command
 
 from protocol import ProtocolType
 

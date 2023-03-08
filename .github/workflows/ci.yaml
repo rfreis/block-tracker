@@ -35,6 +35,12 @@ jobs:
     - name: Style with black
       run: |
         black --check .
+    - name: Imports with isort
+      run: |
+        isort --check-only .
+    - name: Lint with flake8
+      run: |
+        flake8 .
     - name: Test with pytest
       env:
         POSTGRES_DB: db_database
@@ -44,7 +50,7 @@ jobs:
         DB_PORT: 5432
         SECRET_KEY: secret
       run: |
-        coverage run -m pytest tests/ -v -x --ignore=tests/integration
+        coverage run --omit=tests/* -m pytest tests/ -v -x --ignore=tests/integration
         coverage xml --ignore-errors
 
     - name: Code Coverage Report

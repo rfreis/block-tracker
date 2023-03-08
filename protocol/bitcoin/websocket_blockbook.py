@@ -2,7 +2,6 @@ import os
 
 from protocol.utils.blockbook import BlockBookSocketIOClient
 
-
 BLOCKBOOK_SETTINGS = {
     "Bitcoin": {
         "url": os.environ.get("BITCOIN_BLOCKBOOK_WEBSOCKET", ""),

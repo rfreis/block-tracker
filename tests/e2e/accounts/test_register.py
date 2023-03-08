@@ -1,10 +1,8 @@
-import pytest
-
+import pytest  # noqa: F401
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
 from accounts.models import User
-
 from tests.e2e.pages.register import RegisterPage
 
 
@@ -30,7 +28,7 @@ def test_register_page(browser, live_server, default_password):
     assert user.username == "user_one@email.com"
     assert user.first_name == "User"
     assert user.last_name == "One"
-    assert user.is_active == True
+    assert user.is_active is True
 
 
 def test_register_page_email_querystring(browser, live_server, default_password):

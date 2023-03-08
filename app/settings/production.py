@@ -1,5 +1,5 @@
+# flake8: noqa
 from .base import *
-
 
 STATIC_ROOT = os.environ.get("STATIC_ROOT", "/var/www/static")
 STATICFILES_DIRS = [BASE_DIR.parent.joinpath("static")]

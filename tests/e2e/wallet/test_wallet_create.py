@@ -1,13 +1,11 @@
-import pytest
-
+import pytest  # noqa: F401
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
 from protocol.constants import ProtocolType
+from tests.e2e.pages.wallet_create import WalletCreatePage
 from wallet.constants import WalletType
 from wallet.models import Address, UserWallet
-
-from tests.e2e.pages.wallet_create import WalletCreatePage
 
 
 def test_wallet_create_logged_out(browser, live_server):
@@ -43,7 +41,7 @@ def test_wallet_create_add_address(
     assert user_wallets.count() == 1
     user_wallet = user_wallets.first()
     assert user_wallet.user == user_one
-    assert user_wallet.extended_public_key == None
+    assert user_wallet.extended_public_key is None
     assert user_wallet.address.hash == hash_address_p2wpkh_bitcoin_one
     assert user_wallet.address.protocol_type == ProtocolType.BITCOIN
     assert user_wallet.label == "Wallet for Single Address"
@@ -81,7 +79,7 @@ def test_wallet_create_add_xpublic_key(
     assert user_wallet.user == user_one
     assert user_wallet.extended_public_key.hash == hash_xpub_bitcoin_one
     assert user_wallet.extended_public_key.protocol_type == ProtocolType.BITCOIN
-    assert user_wallet.address == None
+    assert user_wallet.address is None
     assert user_wallet.label == "Wallet for Extended Public Key"
     assert user_wallet.wallet_type == WalletType.EXTENDED_PUBLIC_KEY
 

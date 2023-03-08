@@ -1,4 +1,4 @@
-import pytest
+import pytest  # noqa: F401
 
 
 def test_dashboard_not_logged_user(browser, live_server):

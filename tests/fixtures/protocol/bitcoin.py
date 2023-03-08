@@ -1,6 +1,7 @@
-import pytest
 from datetime import datetime, timezone
 from decimal import Decimal
+
+import pytest  # noqa: F401
 
 from protocol.constants import ProtocolType
 from tests.fixtures.utils import json_from_file

@@ -1,5 +1,6 @@
-import pytest
 from datetime import datetime, timezone
+
+import pytest  # noqa: F401
 
 from rate.constants import RateInterval
 from rate.models import Rate

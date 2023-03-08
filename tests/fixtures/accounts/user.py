@@ -1,8 +1,7 @@
-import pytest
-
-from tests.fixtures.utils import delete_related_obj
+import pytest  # noqa: F401
 
 from accounts.models import User
+from tests.fixtures.utils import delete_related_obj
 
 
 @pytest.fixture

@@ -1,14 +1,11 @@
-from django.contrib.auth import (
-    views as auth_views,
-    login as auth_login,
-)
+from django.contrib.auth import login as auth_login
+from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.edit import BaseCreateView
 
-from app.contrib.mixins import BaseContextMixin
-
 from accounts.forms import RegisterForm
+from app.contrib.mixins import BaseContextMixin
 from dashboard.utils import sync_user_balance
 
 

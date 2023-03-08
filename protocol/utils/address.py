@@ -1,6 +1,7 @@
 import hashlib
 
 from base58 import b58decode_check, b58encode_check
+
 from protocol.utils import bech32
 
 

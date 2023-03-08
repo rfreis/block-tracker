@@ -1,9 +1,8 @@
 import logging
 from datetime import datetime
+
 from django.conf import settings
-
 from django.template.loader import render_to_string
-
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +26,6 @@ def send_confirmed_transaction(user, transaction):
         html_message=body_html,
     )
     logger.debug(
-        f"New confirmed transaction #%s email sent to user #%s"
+        "New confirmed transaction #%s email sent to user #%s"
         % (transaction.id, user.id)
     )

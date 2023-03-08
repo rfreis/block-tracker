@@ -1,16 +1,14 @@
 import logging
-
 from calendar import monthrange
 from datetime import date, datetime, timezone
-from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 
+from dateutil.relativedelta import relativedelta
 from django.db.models import Q
 
 from dashboard.models import UserBalance
 from rate.utils import get_usd_rate
 from transaction.models import Transaction
-
 
 logger = logging.getLogger(__name__)
 

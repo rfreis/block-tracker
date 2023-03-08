@@ -1,11 +1,8 @@
-import pytest
-
-from selenium.webdriver.common.by import By
+import pytest  # noqa: F401
+from django.core import mail
 from selenium.webdriver.support import expected_conditions as EC
 
-from django.core import mail
-
-from tests.e2e.pages.password_reset import PasswordResetPage, PasswordResetConfirmPage
+from tests.e2e.pages.password_reset import PasswordResetConfirmPage, PasswordResetPage
 
 
 @pytest.mark.usefixtures("django_db_reset_sequences")
@@ -87,4 +84,4 @@ def test_password_reset_confirm_page(mocker, browser, live_server, user_one):
     page.wait_for(EC.url_to_be(f"{live_server}/accounts/reset/done/"))
 
     user_one.refresh_from_db()
-    assert user_one.check_password("new_password") == True
+    assert user_one.check_password("new_password") is True

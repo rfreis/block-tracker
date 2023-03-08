@@ -1,8 +1,7 @@
-import pytest
-
-from tests.fixtures.utils import delete_related_obj
+import pytest  # noqa: F401
 
 from protocol.constants import ProtocolType
+from tests.fixtures.utils import delete_related_obj
 from wallet.models import ExtendedPublicKey
 
 

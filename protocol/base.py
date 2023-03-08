@@ -6,13 +6,15 @@ class ProtocolBase:
         super().__init__(*args, **kwargs)
 
     @classmethod
-    def validate_address(cls, address):
+    def validate_address(cls, address):  # pragma: no cover
         raise NotImplementedError("Method not implemented")
 
     @classmethod
-    def validate_xpublic_key(cls, xpublic_key):
+    def validate_xpublic_key(cls, xpublic_key):  # pragma: no cover
         raise NotImplementedError("Method not implemented")
 
     @classmethod
-    def derive_addresses_from_xpublic_key(cls, xpublic_key, start=0, end=20, **kwargs):
+    def derive_addresses_from_xpublic_key(
+        cls, xpublic_key, start=0, end=20, **kwargs
+    ):  # pragma: no cover
         raise NotImplementedError("Method not implemented")

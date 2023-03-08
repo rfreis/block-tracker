@@ -1,7 +1,7 @@
 from django.db import models
 
-from app.contrib.models import TimeStampedModel
 from accounts.models import User
+from app.contrib.models import TimeStampedModel
 from protocol.constants import ProtocolType
 from wallet.constants import WalletType
 

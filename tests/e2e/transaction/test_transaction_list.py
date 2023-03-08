@@ -1,4 +1,4 @@
-import pytest
+import pytest  # noqa: F401
 
 from tests.e2e.pages.transaction_list import TransactionListPage
 

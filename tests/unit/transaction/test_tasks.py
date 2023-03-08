@@ -1,8 +1,8 @@
-import pytest
+import pytest  # noqa: F401
 
 from transaction.tasks import (
-    new_confirmed_transactions,
     new_address,
+    new_confirmed_transactions,
     new_extended_public_key,
 )
 

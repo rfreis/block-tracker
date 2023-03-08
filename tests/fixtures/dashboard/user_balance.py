@@ -1,5 +1,6 @@
-import pytest
 from datetime import date
+
+import pytest  # noqa: F401
 
 from dashboard.models import UserBalance
 
@@ -7,20 +8,6 @@ from dashboard.models import UserBalance
 @pytest.fixture
 @pytest.mark.usefixtures("db")
 def user_balance_one(user_one):
-    user_balance = UserBalance.objects.create(
-        user=user_one,
-        date=date(2023, 1, 31),
-        balance={"BTC": "0.5", "BTCTEST": "0.2"},
-    )
-
-    yield user_balance
-
-    user_balance.delete()
-
-
-@pytest.fixture
-@pytest.mark.usefixtures("db")
-def user_balance_two_empty(user_one):
     user_balance = UserBalance.objects.create(
         user=user_one,
         date=date(2022, 12, 31),

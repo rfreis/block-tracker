@@ -1,15 +1,12 @@
 import asyncio
-from aiohttp import (
-    ClientSession,
-    ClientError,
-)
 import logging
-import socketio
 from urllib.parse import urlencode
+
+import socketio
+from aiohttp import ClientError, ClientSession
 
 from app.celery import app as celery_app
 from protocol.utils.exceptions import ClientException
-
 
 logger = logging.getLogger(__name__)
 

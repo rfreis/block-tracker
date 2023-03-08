@@ -1,7 +1,7 @@
+from base58 import b58decode_check
 from ecdsa import VerifyingKey
 from ecdsa.curves import SECP256k1
 from ecdsa.errors import MalformedPointError
-from base58 import b58decode_check
 
 
 def validate_deserialized_xpub(deserialized_xpub):
