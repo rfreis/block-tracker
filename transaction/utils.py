@@ -203,5 +203,5 @@ def confirm_transactions(transactions):
             transaction.is_confirmed = True
             transaction.save(update_fields=["is_confirmed"])
     celery_app.send_task(
-        "transaction.tasks.new_confirmed_transactions", (transaction_ids)
+        "transaction.tasks.new_confirmed_transactions", (transaction_ids,)
     )
