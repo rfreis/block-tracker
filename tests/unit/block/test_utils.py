@@ -132,7 +132,7 @@ def test_confirm_blocks_new_block(
     assert transaction_single_bitcoin_address_one.is_confirmed is True
     mock_new_confirmed_transactions.assert_called_once_with(
         "transaction.tasks.new_confirmed_transactions",
-        [transaction_single_bitcoin_address_one.id],
+        ([transaction_single_bitcoin_address_one.id],),
     )
 
     address_output = Address.objects.get(hash="17opNHjQAqBheBubbxRgRQAPrmR6ePsB8k")
