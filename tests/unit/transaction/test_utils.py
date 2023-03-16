@@ -124,6 +124,7 @@ def test_sync_transactions_from_address(
     assert tx_1_input.amount_usd == "6.005926183073425868"
     assert tx_1_input.amount_asset == "0.00067396"
     assert tx_1_input.asset_name == "BTC"
+    assert tx_1_input.vin_vout == 0
     tx_2 = queryset[1]
     assert (
         tx_2.tx_id == "a0a7e1bb6460bffed958bc80d74966be14fdec09608408de351053d1e8d653a1"
@@ -188,6 +189,7 @@ def test_sync_transactions_from_address(
     assert tx_2_output.amount_usd == "6.005926183073425868"
     assert tx_2_output.amount_asset == "0.00067396"
     assert tx_2_output.asset_name == "BTC"
+    assert tx_2_output.vin_vout == 0
     assert Decimal(address.balance["BTC"]) == Decimal("0")
 
 
@@ -246,6 +248,7 @@ def test_sync_transactions_from_extended_public_key(
     assert tx_1_input.amount_usd is None
     assert tx_1_input.amount_asset == "0.00067396"
     assert tx_1_input.asset_name == "BTC"
+    assert tx_1_input.vin_vout == 0
     tx_2 = queryset[1]
     assert (
         tx_2.tx_id == "a0a7e1bb6460bffed958bc80d74966be14fdec09608408de351053d1e8d653a1"
@@ -270,6 +273,7 @@ def test_sync_transactions_from_extended_public_key(
     assert tx_2_output.amount_usd is None
     assert tx_2_output.amount_asset == "0.00067396"
     assert tx_2_output.asset_name == "BTC"
+    assert tx_2_output.vin_vout == 0
     assert Decimal(address.balance["BTC"]) == Decimal("0")
     xpublic_key_bitcoin_two.refresh_from_db()
     assert Decimal(xpublic_key_bitcoin_two.balance["BTC"]) == Decimal("0")
@@ -335,6 +339,56 @@ def test_sync_transactions_from_extended_public_key_partial_response_unconfirmed
     assert "BTC" not in xpublic_key_bitcoin_two.balance
     address = Address.objects.get(hash="12CL4K2eVqj7hQTix7dM7CVHCkpP17Pry3")
     assert "BTC" not in address.balance
+
+
+@pytest.mark.usefixtures("db")
+def test_create_transactions_with_multiple_inputs_from_same_address(
+    transaction_with_multiple_inputs_from_same_address,
+    single_bitcoin_address_six,
+):
+    queryset = Transaction.objects.all()
+    assert queryset.count() == 0
+    single_bitcoin_address_six.balance = {"BTC": "0.71260000"}
+    single_bitcoin_address_six.save()
+
+    create_transactions(
+        [transaction_with_multiple_inputs_from_same_address], ProtocolType.BITCOIN
+    )
+
+    assert queryset.count() == 1
+    transaction = queryset.first()
+
+    assert (
+        transaction.tx_id
+        == "63045ae0a5fc259bdc548333b89787f81492d80d76fbb382082788d139b38058"
+    )
+    assert transaction.inputdata.count() == 15
+    assert transaction.outputdata.count() == 1
+    expected_values = [
+        {"vin_vout": 0, "amount_asset": "0.05027107"},
+        {"vin_vout": 1, "amount_asset": "0.05015047"},
+        {"vin_vout": 2, "amount_asset": "0.05054351"},
+        {"vin_vout": 3, "amount_asset": "0.05148952"},
+        {"vin_vout": 4, "amount_asset": "0.05215661"},
+        {"vin_vout": 5, "amount_asset": "0.05047284"},
+        {"vin_vout": 6, "amount_asset": "0.05127958"},
+        {"vin_vout": 7, "amount_asset": "0.05014821"},
+        {"vin_vout": 8, "amount_asset": "0.05127504"},
+        {"vin_vout": 9, "amount_asset": "0.05039535"},
+        {"vin_vout": 10, "amount_asset": "0.05117576"},
+        {"vin_vout": 11, "amount_asset": "0.05161889"},
+        {"vin_vout": 12, "amount_asset": "0.05067721"},
+        {"vin_vout": 13, "amount_asset": "0.05120893"},
+        {"vin_vout": 14, "amount_asset": "0.05044978"},
+    ]
+    for expected_value in expected_values:
+        input_vin = transaction.inputdata.get(vin_vout=expected_value["vin_vout"])
+        assert input_vin.address == single_bitcoin_address_six
+        assert input_vin.amount_usd is None
+        assert input_vin.amount_asset == expected_value["amount_asset"]
+        assert input_vin.asset_name == "BTC"
+    single_bitcoin_address_six.refresh_from_db()
+    assert Decimal(single_bitcoin_address_six.balance["BTC"]) == Decimal("0")
 
 
 @pytest.mark.usefixtures("db")

@@ -189,6 +189,132 @@ def blockbook_address_details():
 
 
 @pytest.fixture
+def transaction_with_multiple_inputs_from_same_address(blockbook_block):
+    return {
+        "protocol_type": ProtocolType.BITCOIN,
+        "tx_id": "63045ae0a5fc259bdc548333b89787f81492d80d76fbb382082788d139b38058",
+        "block_id": 246469,
+        "block_time": datetime(2013, 7, 14, 4, 0, 52, tzinfo=timezone.utc),
+        "is_confirmed": True,
+        "details": {
+            "value_input": "0.76331277",
+            "value_output": "0.76301277",
+            "fee": "0.0003",
+            "asset_name": "BTC",
+            "block_hash": "00000000000000836597cc216daeda1e7d82361a04312f29bf75c12b511bb2db",
+        },
+        "addresses": [
+            "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            "1FdmuJw8UG5mXH8PyL2NV92FBdbMKdcPr1",
+            "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+        ],
+        "inputs": [
+            {
+                "amount_asset": Decimal("0.05027107"),
+                "asset_name": "BTC",
+                "address": "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            },
+            {
+                "amount_asset": Decimal("0.05015047"),
+                "asset_name": "BTC",
+                "address": "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            },
+            {
+                "amount_asset": Decimal("0.05054351"),
+                "asset_name": "BTC",
+                "address": "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            },
+            {
+                "amount_asset": Decimal("0.05148952"),
+                "asset_name": "BTC",
+                "address": "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            },
+            {
+                "amount_asset": Decimal("0.05215661"),
+                "asset_name": "BTC",
+                "address": "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            },
+            {
+                "amount_asset": Decimal("0.05047284"),
+                "asset_name": "BTC",
+                "address": "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            },
+            {
+                "amount_asset": Decimal("0.05127958"),
+                "asset_name": "BTC",
+                "address": "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            },
+            {
+                "amount_asset": Decimal("0.05014821"),
+                "asset_name": "BTC",
+                "address": "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            },
+            {
+                "amount_asset": Decimal("0.05127504"),
+                "asset_name": "BTC",
+                "address": "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            },
+            {
+                "amount_asset": Decimal("0.05039535"),
+                "asset_name": "BTC",
+                "address": "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            },
+            {
+                "amount_asset": Decimal("0.05117576"),
+                "asset_name": "BTC",
+                "address": "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            },
+            {
+                "amount_asset": Decimal("0.05161889"),
+                "asset_name": "BTC",
+                "address": "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            },
+            {
+                "amount_asset": Decimal("0.05067721"),
+                "asset_name": "BTC",
+                "address": "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            },
+            {
+                "amount_asset": Decimal("0.05120893"),
+                "asset_name": "BTC",
+                "address": "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            },
+            {
+                "amount_asset": Decimal("0.05044978"),
+                "asset_name": "BTC",
+                "address": "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            },
+        ],
+        "outputs": [
+            {
+                "amount_asset": Decimal("0.7123"),
+                "asset_name": "BTC",
+                "address": "1FdmuJw8UG5mXH8PyL2NV92FBdbMKdcPr1",
+            },
+            {
+                "amount_asset": Decimal("0.05071277"),
+                "asset_name": "BTC",
+                "address": "1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+            },
+        ],
+    }
+
+
+@pytest.fixture
 def transaction_with_null_char():
     return {
         "protocol_type": ProtocolType.BITCOIN,

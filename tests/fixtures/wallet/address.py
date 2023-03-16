@@ -77,6 +77,20 @@ def single_bitcoin_address_five():
 
 @pytest.fixture
 @pytest.mark.usefixtures("db")
+def single_bitcoin_address_six():
+    address = Address.objects.create(
+        hash="1FGnQpZ1fYT4x3dzqtx1F21Y1TBGbumegi",
+        protocol_type=ProtocolType.BITCOIN,
+    )
+
+    yield address
+
+    delete_related_obj(address)
+    address.delete()
+
+
+@pytest.fixture
+@pytest.mark.usefixtures("db")
 def derived_bitcoin_address_one(
     xpublic_key_bitcoin_one, hash_address_p2wpkh_bitcoin_one
 ):
