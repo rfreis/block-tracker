@@ -61,6 +61,7 @@ class AbstractInputOutputData(models.Model):
     amount_usd = models.CharField(max_length=255, blank=True, null=True)
     amount_asset = models.CharField(max_length=255)
     asset_name = models.CharField(max_length=255)
+    vin_vout = models.IntegerField(blank=True, null=True)
 
     class Meta:
         abstract = True

@@ -31,8 +31,9 @@ def get_transactions_from_user(user):
 
 def filter_inputs_or_outputs_by_address(inputs_or_outputs, filtered_addresses):
     filtered_items = []
-    for item in inputs_or_outputs:
+    for index, item in enumerate(inputs_or_outputs):
         if item["address"] in filtered_addresses:
+            item["vin_vout"] = index
             filtered_items.append(item)
     return filtered_items
 
@@ -47,7 +48,7 @@ def create_input_and_output_data(
                 hash=address_hash, protocol_type=transaction.protocol_type
             )
             data_queryset = getattr(transaction, attr_name)
-            data_obj = data_queryset.filter(address=address)
+            data_obj = data_queryset.filter(address=address, vin_vout=item["vin_vout"])
             if not data_obj:
                 item["address"] = address
                 data_obj = data_queryset.create(**item)

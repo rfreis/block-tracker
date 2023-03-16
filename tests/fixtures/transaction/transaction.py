@@ -75,12 +75,14 @@ def transaction_single_bitcoin_address_one(
         amount_usd=Decimal("3.112751521970959190"),
         asset_name="BTC",
         address=derived_bitcoin_address_one,
+        vin_vout=0,
     )
     transaction.outputdata.create(
         amount_asset=Decimal("0.00288733"),
         amount_usd=Decimal("25.730148445268850839"),
         asset_name="BTC",
         address=single_bitcoin_address_one,
+        vin_vout=2,
     )
 
     yield transaction
@@ -128,11 +130,13 @@ def transaction_derived_bitcoin_address_three(
         amount_asset=Decimal("0.00067396"),
         asset_name="BTC",
         address=derived_bitcoin_address_three,
+        vin_vout=0,
     )
     transaction.outputdata.create(
         amount_asset=Decimal("0.00065348"),
         asset_name="BTC",
         address=derived_bitcoin_address_one,
+        vin_vout=0,
     )
 
     yield transaction
