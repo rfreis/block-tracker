@@ -8,6 +8,7 @@
 [![CI](https://github.com/rfreis/block-tracker/actions/workflows/ci.yaml/badge.svg)](https://github.com/rfreis/block-tracker/actions/workflows/ci.yaml)
 [![Coverage](https://img.shields.io/codecov/c/github/rfreis/block-tracker/main.svg)](https://codecov.io/github/rfreis/block-tracker?branch=main)
 ![GitHub Repo stars](https://img.shields.io/github/stars/rfreis/block-tracker)
+[![Roadmap 2023](https://img.shields.io/badge/Roadmap-2023-bc1439.svg)](https://github.com/rfreis/block-tracker/wiki/Roadmap)
 
 </div>
 
@@ -42,7 +43,7 @@ Initially it supports only Bitcoin with P2PKH/P2WPKH addresses. The project aims
 
 # Requirements
 
-To make this run you must have installed:
+To run this app you must have installed:
 
 * docker
 * docker-compose
@@ -52,7 +53,7 @@ To make this run you must have installed:
 Before commiting new changes, make sure you have `pre-commit` installed:
 
 ```bash
-make pre-commit-install
+pre-commit install
 ```
 
 # Running application
