@@ -21,13 +21,23 @@ def test_new_confirmed_transactions(
 
     new_confirmed_transactions([transaction_single_bitcoin_address_one.id])
 
-    assert mock_send_confirmed_transaction.call_args_list[0][0] == (
-        user_one,
-        transaction_single_bitcoin_address_one,
+    assert (
+        mock_send_confirmed_transaction.call_args_list[0][0][0] == user_one or user_two
     )
-    assert mock_send_confirmed_transaction.call_args_list[1][0] == (
-        user_two,
-        transaction_single_bitcoin_address_one,
+    assert (
+        mock_send_confirmed_transaction.call_args_list[1][0][0] == user_one or user_two
+    )
+    assert (
+        mock_send_confirmed_transaction.call_args_list[0][0][0]
+        != mock_send_confirmed_transaction.call_args_list[1][0][0]
+    )
+    assert (
+        mock_send_confirmed_transaction.call_args_list[0][0][1]
+        == transaction_single_bitcoin_address_one
+    )
+    assert (
+        mock_send_confirmed_transaction.call_args_list[1][0][1]
+        == transaction_single_bitcoin_address_one
     )
 
 

@@ -1,4 +1,5 @@
 from datetime import date, datetime, timezone
+from decimal import Decimal
 
 import pytest  # noqa: F401
 from freezegun import freeze_time
@@ -149,3 +150,34 @@ def test_sync_user_balance_with_older_balances(transactions_balance, user_one):
         balances.append([user_balance.date, user_balance.balance])
 
     assert expected_balances == balances
+
+
+@freeze_time("2018-2-13 12:00:00")
+@pytest.mark.usefixtures(
+    "db",
+    "user_wallet_bitcoin_xpub_two",
+)
+def test_sync_user_balance_with_multiple_inputs_from_same_address(
+    transaction_derived_bitcoin_address_three, derived_bitcoin_address_three, user_one
+):
+    transaction_derived_bitcoin_address_three.inputdata.create(
+        amount_asset=Decimal("1"),
+        asset_name="BTC",
+        address=derived_bitcoin_address_three,
+        vin_vout=1,
+    )
+    transaction_derived_bitcoin_address_three.inputdata.create(
+        amount_asset=Decimal("1"),
+        asset_name="BTC",
+        address=derived_bitcoin_address_three,
+        vin_vout=2,
+    )
+    transaction_derived_bitcoin_address_three.inputdata.create(
+        amount_asset=Decimal("1"),
+        asset_name="BTC",
+        address=derived_bitcoin_address_three,
+        vin_vout=3,
+    )
+    sync_user_balance(user_one)
+    user_one_balances = UserBalance.objects.all()
+    assert user_one_balances.last().balance["BTC"] == "-3.00067396"

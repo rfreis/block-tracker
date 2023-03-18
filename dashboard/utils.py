@@ -91,6 +91,7 @@ def sync_user_balance(user):
             | Q(outputs__extended_public_key__user_wallet__user=user)
         )
         .order_by("block_time")
+        .distinct()
     )
     date_reference = get_first_date(queryset)
     date_reference_month_before = None
