@@ -2,7 +2,7 @@
 
 aioresponses==0.7.4
 black==23.1.0
-coverage==7.2.6
+coverage==7.2.7
 django-debug-toolbar==3.8.1
 flake8==6.0.0
 freezegun==1.2.2
