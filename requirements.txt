@@ -1,7 +1,7 @@
 aiohttp==3.8.4
 base58==2.1.1
 celery==5.2.7
-Django==4.1.7
+Django==4.2.4
 gunicorn==20.1.0
 ecdsa==0.18.0
 python-dateutil==2.8.2
